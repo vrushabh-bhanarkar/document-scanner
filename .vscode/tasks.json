@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Check Dart file lengths",
+			"type": "shell",
+			"command": "dart",
+			"args": [
+				"run",
+				"tool/file_length_check.dart",
+				"500"
+			],
+			"problemMatcher": [],
+			"group": "build"
+		},
+		{
+			"label": "noop",
+			"type": "shell",
+			"command": "echo noop"
+		}
+	]
+}

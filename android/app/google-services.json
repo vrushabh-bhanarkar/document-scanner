@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "385512801302",
+    "project_id": "sleekscan-6defd",
+    "storage_bucket": "sleekscan-6defd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:385512801302:android:521e37a6b179d3f341a137",
+        "android_client_info": {
+          "package_name": "com.sleekscan.documentscanner"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7WqBYgfFJxBZ1YsHLHDu8roWZI6TO7PE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
