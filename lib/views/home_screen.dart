@@ -133,7 +133,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
- Widget _buildHeroSection(BuildContext context) {
+  // Widget _buildHeroSection(BuildContext context) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //         crossAxisAlignment: CrossAxisAlignment.center,
+  //         children: [
+  //           Expanded(
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Text(
+  //                   'Document Scanner',
+  //                   style: AppTextStyles.headlineLarge.copyWith(
+  //                     fontWeight: FontWeight.w800,
+  //                     color: AppColors.gray900,
+  //                     letterSpacing: -0.5,
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: 6.h),
+  //                 Text(
+  //                   'Convert, scan, and manage your documents with ease',
+  //                   style: AppTextStyles.bodyMedium.copyWith(
+  //                     color: AppColors.gray600,
+  //                     height: 1.4,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ],
+  //   );
+  // }
+
+
+   Widget _buildHeroSection(BuildContext context) {
   return Container(
     width: double.infinity,
     margin: EdgeInsets.symmetric(horizontal: 1.w), // Slight breathing room
@@ -205,8 +243,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
   );
 }
+   
 
-Widget _buildCreateButton(BuildContext context) {
+  Widget _buildCreateButton(BuildContext context) {
   return GestureDetector(
     onTap: () => _handleNavigation(context),
     child: Container(
@@ -546,32 +585,23 @@ Widget _buildCreateButton(BuildContext context) {
               ),
             ),
       },
-      // {
-      //   'icon': Icons.swap_horiz_rounded,
-      //   'title': 'Convert Files',
-      //   'subtitle': 'PDF ↔ Word',
-      //   'color': AppColors.secondaryTeal,
-      //   'gradient': AppColors.secondaryTealGradient,
-      //   'onTap': () => Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => const FileConversionScreen(),
-      //         ),
-      //       ),
-      // },
-      // {
-      //   'icon': Icons.transform_rounded,
-      //   'title': 'Convert',
-      //   'subtitle': 'PDF ↔ Word, Images, Text',
-      //   'color': AppColors.secondaryTeal,
-      //   'gradient': AppColors.secondaryTealGradient,
-      //   'onTap': () => _showConvertOptions(context),
-      // },
+      {
+        'icon': Icons.swap_horiz_rounded,
+        'title': 'Convert Files',
+        'subtitle': 'PDF ↔ Word',
+        'color': AppColors.secondaryTeal,
+        'gradient': AppColors.secondaryTealGradient,
+        'onTap': () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FileConversionScreen(),
+              ),
+            ),
+      },
       {
         'icon': Icons.edit_document,
         'title': 'Edit PDF',
         'subtitle': 'Edit existing PDFs',
-        // 'color': AppColors.amber,
         'color': AppColors.purple,
         'gradient': AppColors.purpleGradientVibrant,
         'onTap': () => Navigator.push(
@@ -581,19 +611,6 @@ Widget _buildCreateButton(BuildContext context) {
               ),
             ),
       },
-      // {
-      //   'icon': Icons.auto_fix_high_rounded,
-      //   'title': 'Full Edit PDF',
-      //   'subtitle': 'All tools in one screen',
-      //   'color': AppColors.purple,
-      //   'gradient': AppColors.purpleGradient,
-      //   'onTap': () => Navigator.push(
-      //         context,
-      //         MaterialPageRoute(
-      //           builder: (context) => const FullEditPdfScreen(),
-      //         ),
-      //       ),
-      // },
     ];
 
     return Column(

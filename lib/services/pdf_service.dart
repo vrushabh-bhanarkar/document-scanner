@@ -2290,16 +2290,23 @@ ${_textToParagraphs(text)}
   String _extractTextFromDocumentXml(String xml) {
     final buffer = StringBuffer();
     
+    // Handle paragraph breaks - insert newline after </w:p> tags
+    String processedXml = xml.replaceAll('</w:p>', '\n');
+    
     // Simple regex to extract text between <w:t> tags
     final regex = RegExp(r'<w:t[^>]*>([^<]*)</w:t>');
-    final matches = regex.allMatches(xml);
+    final matches = regex.allMatches(processedXml);
     
     for (final match in matches) {
-      if (match.group(1) != null) {
-        buffer.write(match.group(1));
+      final text = match.group(1);
+      if (text != null && text.isNotEmpty) {
+        buffer.write(text);
       }
     }
     
-    return buffer.toString();
+    // Clean up multiple consecutive newlines
+    String result = buffer.toString();
+    result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+    return result.trim();
   }
 }

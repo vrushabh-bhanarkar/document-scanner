@@ -38,7 +38,9 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
       _mode == _ConversionMode.pdfToWord ? 'Convert to DOCX' : 'Convert to PDF';
 
   Future<void> _pickFile() async {
-    final extensions = _mode == _ConversionMode.pdfToWord ? ['pdf'] : ['docx'];
+    final extensions = _mode == _ConversionMode.pdfToWord
+        ? ['pdf']
+        : ['docx', 'doc'];
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: extensions,
@@ -60,6 +62,16 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
   Future<void> _startConversion() async {
     if (_selectedFile == null) {
       _showSnack('Please select a file first.');
+      return;
+    }
+
+    final path = _selectedFile!.path.toLowerCase();
+    if (_mode == _ConversionMode.wordToPdf && !path.endsWith('.docx')) {
+      _showSnack('Only DOCX files are supported right now.');
+      return;
+    }
+    if (_mode == _ConversionMode.pdfToWord && !path.endsWith('.pdf')) {
+      _showSnack('Please select a PDF file.');
       return;
     }
 
@@ -396,86 +408,61 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
   }
 
   Widget _buildModeSelector() {
-    return Row(
-      children: [
-        Expanded(child: _buildModeTile(_ConversionMode.pdfToWord,
-            title: 'PDF to Word', subtitle: 'Keeps text in DOCX', icon: Icons.description)),
-        SizedBox(width: 12.w),
-        Expanded(child: _buildModeTile(_ConversionMode.wordToPdf,
-            title: 'Word to PDF', subtitle: 'Lock layout as PDF', icon: Icons.picture_as_pdf)),
-      ],
-    );
-  }
-
-  Widget _buildModeTile(
-    _ConversionMode mode, {
-    required String title,
-    required String subtitle,
-    required IconData icon,
-  }) {
-    final isSelected = _mode == mode;
-    final baseColor = isSelected ? AppColors.secondaryTeal : AppColors.gray200;
-
-    return GestureDetector(
-      onTap: () => setState(() => _mode = mode),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        padding: EdgeInsets.all(14.w),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.secondaryTealExtraLight : AppColors.white,
-          borderRadius: BorderRadius.circular(16.r),
-          border: Border.all(
-            color: isSelected ? baseColor : AppColors.gray200,
-            width: 1.5,
+    Widget buildTab(
+      _ConversionMode mode,
+      String label,
+      IconData icon,
+    ) {
+      final isSelected = _mode == mode;
+      return Expanded(
+        child: InkWell(
+          onTap: _isProcessing ? null : () => setState(() => _mode = mode),
+          borderRadius: BorderRadius.circular(14.r),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.secondaryTeal : Colors.white,
+              borderRadius: BorderRadius.circular(14.r),
+              border: Border.all(
+                color: isSelected ? AppColors.secondaryTeal : AppColors.gray200,
+                width: 1.2,
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon,
+                    color: isSelected ? Colors.white : AppColors.gray700,
+                    size: 18.sp),
+                SizedBox(width: 8.w),
+                Text(
+                  label,
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: isSelected ? Colors.white : AppColors.gray700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppColors.secondaryTeal.withOpacity(0.16),
-                    blurRadius: 14,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : [],
         ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(10.w),
-              decoration: BoxDecoration(
-                color: baseColor.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Icon(icon, color: baseColor, size: 24.sp),
-            ),
-            SizedBox(width: 12.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: AppTextStyles.titleMedium.copyWith(
-                      color: AppColors.gray900,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: AppColors.gray600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              isSelected ? Icons.check_circle : Icons.circle_outlined,
-              color: baseColor,
-              size: 20.sp,
-            ),
-          ],
-        ),
+      );
+    }
+
+    return Container(
+      padding: EdgeInsets.all(6.w),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceVariant,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.gray200),
+      ),
+      child: Row(
+        children: [
+          buildTab(_ConversionMode.pdfToWord, 'PDF → Word', Icons.description),
+          SizedBox(width: 8.w),
+          buildTab(_ConversionMode.wordToPdf, 'Word → PDF', Icons.picture_as_pdf),
+        ],
       ),
     );
   }
@@ -484,11 +471,12 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
     final hasFile = _selectedFile != null && _selectedFile!.existsSync();
     final fileName = hasFile ? p.basename(_selectedFile!.path) : 'No file selected';
     final fileSize = hasFile ? (_selectedFileSize ?? _safeLengthSync(_selectedFile!)) : null;
+    final supportedText = _mode == _ConversionMode.pdfToWord ? 'PDF' : 'DOCX only';
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(18.r),
         border: Border.all(color: AppColors.gray200),
         boxShadow: [
@@ -507,10 +495,10 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
               Container(
                 padding: EdgeInsets.all(10.w),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withOpacity(0.08),
+                  color: AppColors.primaryBlue.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: Icon(Icons.attach_file,
+                child: Icon(Icons.insert_drive_file_rounded,
                     color: AppColors.primaryBlue, size: 22.sp),
               ),
               SizedBox(width: 10.w),
@@ -529,16 +517,26 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
                     Text(
                       hasFile
                           ? 'Ready to convert $_modeTitle'
-                          : 'Supported: ${_mode == _ConversionMode.pdfToWord ? 'PDF' : 'DOCX'}',
-                      style: AppTextStyles.bodySmall,
+                          : 'Supported: $supportedText',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.gray600,
+                      ),
                     ),
                   ],
                 ),
               ),
-              TextButton.icon(
+              ElevatedButton.icon(
                 onPressed: _isProcessing ? null : _pickFile,
                 icon: Icon(Icons.folder_open, size: 18.sp),
                 label: Text(hasFile ? 'Change' : 'Select'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                ),
               ),
             ],
           ),

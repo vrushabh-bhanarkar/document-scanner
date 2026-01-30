@@ -497,6 +497,8 @@ class FileManagementService {
         final fileName = file.path.split('/').last;
         final String mimeType = fileName.toLowerCase().endsWith('.pdf')
             ? 'application/pdf'
+            : fileName.toLowerCase().endsWith('.docx') 
+            ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
             : 'image/jpeg';
         final bool? result =
             await _channel.invokeMethod('saveFileToDownloads', {
@@ -505,7 +507,9 @@ class FileManagementService {
           'mimeType': mimeType,
         });
         if (result == true) {
-          await addToRecentDownloads(fileName);
+          // Add full path to recent downloads
+          final fullPath = '/storage/emulated/0/Download/$fileName';
+          await addToRecentDownloads(fullPath);
           return true;
         } else {
           print('MediaStore save failed');
@@ -545,19 +549,44 @@ class FileManagementService {
   /// Get recent downloads (sorted by last modified date desc)
   Future<List<Map<String, dynamic>>> getRecentDownloads(
       {int limit = 20}) async {
-    final downloadsDir = Directory('/storage/emulated/0/Download');
-    if (!await downloadsDir.exists()) {
-      return [];
+    await initialize();
+    
+    final trackedFiles = <Map<String, dynamic>>[];
+    
+    // First, get files from Hive database (recently saved files)
+    for (final filePath in _recentDownloadsBox.keys) {
+      final file = File(filePath);
+      if (await file.exists()) {
+        trackedFiles.add({
+          'path': filePath,
+          'modified': file.lastModifiedSync(),
+        });
+      } else {
+        // Remove from database if file no longer exists
+        await _recentDownloadsBox.delete(filePath);
+      }
     }
-    final files = downloadsDir.listSync().whereType<File>().toList();
-    files.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
-    return files
-        .take(limit)
-        .map((file) => {
-              'path': file.path,
-              'modified': file.lastModifiedSync(),
-            })
-        .toList();
+    
+    // Also scan Downloads directory for any other files
+    final downloadsDir = Directory('/storage/emulated/0/Download');
+    if (await downloadsDir.exists()) {
+      final dirFiles = downloadsDir.listSync().whereType<File>().toList();
+      
+      for (final file in dirFiles) {
+        // Only add if not already in tracked files
+        if (!trackedFiles.any((f) => f['path'] == file.path)) {
+          trackedFiles.add({
+            'path': file.path,
+            'modified': file.lastModifiedSync(),
+          });
+        }
+      }
+    }
+    
+    // Sort by modification date (newest first)
+    trackedFiles.sort((a, b) => (b['modified'] as DateTime).compareTo(a['modified'] as DateTime));
+    
+    return trackedFiles.take(limit).toList();
   }
 
   /// Delete a recent download (removes file and from list)

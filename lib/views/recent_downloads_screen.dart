@@ -291,21 +291,51 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          fileName,
-                          style: AppTextStyles.titleMedium.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.gray900,
+                        Tooltip(
+                          message: fileName,
+                          child: Text(
+                            fileName.length > 35 ? '${fileName.substring(0, 32)}...' : fileName,
+                            style: AppTextStyles.titleMedium.copyWith(
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.gray900,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Modified: ${modified.toString().split('.')[0]}',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.gray600,
-                          ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.schedule_rounded, size: 13, color: AppColors.gray500),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Modified: ${modified.toString().split('.')[0]}',
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.gray600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.folder_rounded, size: 13, color: AppColors.gray500),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                filePath,
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.gray500,
+                                  fontSize: 10,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
