@@ -2107,28 +2107,55 @@ class PDFService {
     required File pdfFile,
   }) async {
     try {
+      // Validate input file
+      if (!await pdfFile.exists()) {
+        print('PDF file does not exist: ${pdfFile.path}');
+        return null;
+      }
+
       // Extract text from PDF
       final extractedText = await extractTextFromPdf(pdfFile: pdfFile);
       
       if (extractedText.isEmpty) {
-        print('No text found in PDF');
+        print('No text found in PDF: ${pdfFile.path}');
         return null;
       }
 
-      // Create DOCX file
+      // Create output directory if needed
       final directory = await getApplicationDocumentsDirectory();
-      final baseName = pdfFile.path.split('/').last.replaceAll('.pdf', '');
-      final fileName = '${baseName}_${_uuid.v4()}.docx';
-      final file = File('${directory.path}/$fileName');
+      final convertDir = Directory('${directory.path}/conversions');
+      if (!await convertDir.exists()) {
+        await convertDir.create(recursive: true);
+      }
+
+      // Create unique DOCX file
+      final baseName = pdfFile.path.split('/').last.replaceAll('.pdf', '').replaceAll('.PDF', '');
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = '${baseName}_${timestamp}.docx';
+      final outputFile = File('${convertDir.path}/$fileName');
 
       // Create minimal DOCX structure
       final docxBytes = _createDocxFromText(extractedText);
-      await file.writeAsBytes(docxBytes);
+      
+      // Validate bytes were generated
+      if (docxBytes.isEmpty) {
+        print('Failed to generate DOCX bytes');
+        return null;
+      }
 
-      return file;
+      await outputFile.writeAsBytes(docxBytes);
+
+      // Verify file was written
+      if (!await outputFile.exists()) {
+        print('Failed to write DOCX file');
+        return null;
+      }
+
+      print('Successfully converted PDF to Word: ${outputFile.path}');
+      return outputFile;
     } catch (e) {
       print('Error converting PDF to Word: $e');
-      return null;
+      rethrow;
     }
   }
 
@@ -2137,81 +2164,125 @@ class PDFService {
     required File wordFile,
   }) async {
     try {
-      // Extract text from DOCX
-      final extractedText = await _extractTextFromDocx(wordFile);
-      
-      if (extractedText.isEmpty) {
-        print('No text found in Word document');
+      // Validate input file
+      if (!await wordFile.exists()) {
+        print('Word file does not exist: ${wordFile.path}');
         return null;
       }
 
-      // Create PDF from text
+      // Extract text from DOCX
+      final extractedText = await _extractTextFromDocx(wordFile);
+      
+      print('Extracted text from Word: length=${extractedText.length}');
+      
+      if (extractedText.isEmpty) {
+        print('No text found in Word document: ${wordFile.path}');
+        return null;
+      }
+
+      // Create output directory if needed
       final directory = await getApplicationDocumentsDirectory();
-      final baseName = wordFile.path.split('/').last.replaceAll('.docx', '');
-      final fileName = '${baseName}_${_uuid.v4()}.pdf';
+      final convertDir = Directory('${directory.path}/conversions');
+      if (!await convertDir.exists()) {
+        await convertDir.create(recursive: true);
+      }
+
+      // Create unique PDF file
+      final baseName = wordFile.path.split('/').last.replaceAll('.docx', '').replaceAll('.doc', '');
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = '${baseName}_${timestamp}.pdf';
       
       final pdf = pw.Document();
       
-      // Split text into pages (roughly 3000 chars per page)
+      // Split text into pages based on line count and character count
       final lines = extractedText.split('\n');
       List<String> currentPageLines = [];
       int currentCharCount = 0;
+      int pageCount = 0;
+      const int maxCharsPerPage = 3000;
+      const int maxLinesPerPage = 50;
       
-      for (final line in lines) {
-        if (currentCharCount + line.length > 3000 && currentPageLines.isNotEmpty) {
+      print('Creating PDF from ${lines.length} lines');
+      
+      for (int i = 0; i < lines.length; i++) {
+        final line = lines[i];
+        
+        // Add page break if we've exceeded limits and have content
+        if ((currentCharCount + line.length > maxCharsPerPage || 
+             currentPageLines.length >= maxLinesPerPage) && 
+            currentPageLines.isNotEmpty) {
           // Add current page
-          pdf.addPage(
-            pw.Page(
-              margin: pw.EdgeInsets.all(40),
-              build: (pw.Context context) {
-                return pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text(
-                      currentPageLines.join('\n'),
-                      style: pw.TextStyle(fontSize: 11),
-                    ),
-                  ],
-                );
-              },
-            ),
-          );
+          _addPageToPdf(pdf, currentPageLines);
+          pageCount++;
           currentPageLines = [];
           currentCharCount = 0;
         }
+        
         currentPageLines.add(line);
-        currentCharCount += line.length;
+        currentCharCount += line.length + 1; // +1 for newline
       }
       
       // Add remaining lines
       if (currentPageLines.isNotEmpty) {
-        pdf.addPage(
-          pw.Page(
-            margin: pw.EdgeInsets.all(40),
-            build: (pw.Context context) {
-              return pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(
-                    currentPageLines.join('\n'),
-                    style: pw.TextStyle(fontSize: 11),
-                  ),
-                ],
-              );
-            },
-          ),
-        );
+        _addPageToPdf(pdf, currentPageLines);
+        pageCount++;
       }
 
-      final file = File('${directory.path}/$fileName');
-      final pdfBytes = await pdf.save();
-      await file.writeAsBytes(pdfBytes);
+      // Ensure we have at least one page
+      if (pageCount == 0) {
+        print('No pages added, creating empty page with text');
+        _addPageToPdf(pdf, [extractedText]);
+        pageCount = 1;
+      }
 
-      return file;
+      final outputFile = File('${convertDir.path}/$fileName');
+      final pdfBytes = await pdf.save();
+      
+      print('Generated PDF: ${pdfBytes.length} bytes, $pageCount pages');
+      
+      // Validate bytes were generated
+      if (pdfBytes.isEmpty) {
+        print('Failed to generate PDF bytes');
+        return null;
+      }
+
+      await outputFile.writeAsBytes(pdfBytes);
+
+      // Verify file was written
+      if (!await outputFile.exists()) {
+        print('Failed to write PDF file');
+        return null;
+      }
+
+      final fileSize = await outputFile.length();
+      print('Successfully converted Word to PDF: ${outputFile.path} (${fileSize} bytes)');
+      return outputFile;
     } catch (e) {
       print('Error converting Word to PDF: $e');
-      return null;
+      rethrow;
     }
+  }
+
+  /// Helper method to add a page to PDF with proper text wrapping
+  void _addPageToPdf(pw.Document pdf, List<String> lines) {
+    pdf.addPage(
+      pw.Page(
+        margin: pw.EdgeInsets.all(40),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                lines.join('\n'),
+                style: pw.TextStyle(fontSize: 11),
+                maxLines: null,
+                softWrap: true,
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   /// Create DOCX file bytes from text
@@ -2269,16 +2340,24 @@ ${_textToParagraphs(text)}
   Future<String> _extractTextFromDocx(File docxFile) async {
     try {
       final bytes = await docxFile.readAsBytes();
+      print('DOCX file size: ${bytes.length} bytes');
+      
       final archive = ZipDecoder().decodeBytes(bytes);
+      print('DOCX archive extracted, found ${archive.length} files');
       
       // Find document.xml
       for (final file in archive) {
         if (file.name == 'word/document.xml') {
+          print('Found document.xml, size: ${file.size} bytes');
           final content = utf8.decode(file.content as List<int>);
-          return _extractTextFromDocumentXml(content);
+          final extractedText = _extractTextFromDocumentXml(content);
+          print('Extracted text length: ${extractedText.length} characters');
+          print('First 200 chars: ${extractedText.substring(0, extractedText.length > 200 ? 200 : extractedText.length)}');
+          return extractedText;
         }
       }
       
+      print('document.xml not found in DOCX archive');
       return '';
     } catch (e) {
       print('Error extracting text from DOCX: $e');
@@ -2290,23 +2369,57 @@ ${_textToParagraphs(text)}
   String _extractTextFromDocumentXml(String xml) {
     final buffer = StringBuffer();
     
-    // Handle paragraph breaks - insert newline after </w:p> tags
-    String processedXml = xml.replaceAll('</w:p>', '\n');
-    
-    // Simple regex to extract text between <w:t> tags
-    final regex = RegExp(r'<w:t[^>]*>([^<]*)</w:t>');
-    final matches = regex.allMatches(processedXml);
-    
-    for (final match in matches) {
-      final text = match.group(1);
-      if (text != null && text.isNotEmpty) {
-        buffer.write(text);
+    try {
+      // Replace common XML entities first
+      String processed = xml
+          .replaceAll('&amp;', '&')
+          .replaceAll('&lt;', '<')
+          .replaceAll('&gt;', '>')
+          .replaceAll('&quot;', '"')
+          .replaceAll('&apos;', "'");
+      
+      // Extract text between <w:t> tags - improved regex to handle spaces
+      final regex = RegExp(r'<w:t[^>]*>([^<]*?)</w:t>', multiLine: true);
+      final matches = regex.allMatches(processed);
+      
+      print('Found ${matches.length} text elements in document.xml');
+      
+      String previousEnd = '';
+      for (final match in matches) {
+        final text = match.group(1);
+        if (text != null) {
+          buffer.write(text);
+          previousEnd = text;
+        }
       }
+      
+      // Also try to extract text using a more aggressive method
+      // Look for content between > and < that's not empty
+      if (buffer.isEmpty) {
+        print('No text found with standard regex, trying alternative method');
+        final altRegex = RegExp(r'>([^<]+?)<');
+        final altMatches = altRegex.allMatches(processed);
+        
+        for (final match in altMatches) {
+          final text = match.group(1)?.trim();
+          if (text != null && text.isNotEmpty && !text.startsWith('w:')) {
+            buffer.write(text);
+            buffer.write('\n');
+          }
+        }
+      }
+      
+      // Restore paragraph breaks
+      String result = buffer.toString();
+      
+      // Clean up excessive whitespace
+      result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+      result = result.replaceAll(RegExp(r' {2,}'), ' ');
+      
+      return result.trim();
+    } catch (e) {
+      print('Error parsing XML: $e');
+      return '';
     }
-    
-    // Clean up multiple consecutive newlines
-    String result = buffer.toString();
-    result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
-    return result.trim();
   }
 }

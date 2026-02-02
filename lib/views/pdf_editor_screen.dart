@@ -16,6 +16,7 @@ import 'package:saver_gallery/saver_gallery.dart';
 import '../services/ocr_service.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
+import 'add_signature_screen.dart';
 
 class PdfEditorScreen extends StatefulWidget {
   final DocumentModel? document;
@@ -1238,58 +1239,25 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
 
   // --- New: Signature ---
   void _onAddSignature() async {
-    _signatureController.clear();
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add signature'),
-        content: SizedBox(
-          width: 350,
-          height: 250,
-          child: Signature(
-            controller: _signatureController,
-            backgroundColor: Colors.white,
-          ),
+    // Navigate to the new comprehensive signature screen
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddSignatureScreen(
+          pdfFile: File(_currentFilePath!),
+          initialPage: _currentPage,
         ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
-          TextButton(
-              onPressed: _signatureController.clear,
-              child: const Text('Clear')),
-          ElevatedButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Apply')),
-        ],
       ),
     );
-    if (saved != true) return;
-    final png = await _signatureController.toPngBytes();
-    if (png == null) return;
-    setState(() => _isLoading = true);
-    final file = File(_currentFilePath!);
-    final doc = sf.PdfDocument(inputBytes: await file.readAsBytes());
-    final size = doc.pages[_currentPage - 1].size;
-    doc.dispose();
-    final double w = size.width * 0.35;
-    final double h = w * 0.35; // approximate aspect
-    final newFile = await _pdfService.addImageOverlayToPDF(
-      pdfFile: file,
-      pngBytes: png,
-      pageIndex: _currentPage - 1,
-      targetRect:
-          Rect.fromLTWH(size.width - w - 24, size.height - h - 24, w, h),
-      outputTitle: widget.document?.title ?? 'edited_pdf',
-    );
-    if (newFile != null) {
-      setState(() => _currentFilePath = newFile.path);
+
+    // If a new signed PDF was created, reload it
+    if (result != null && result is File) {
+      setState(() {
+        _currentFilePath = result.path;
+      });
       await _initializePdf();
-      _showSnackBar('Signature added!');
-    } else {
-      _showSnackBar('Failed to add signature', isError: true);
+      _showSnackBar('Signature added successfully!');
     }
-    setState(() => _isLoading = false);
   }
 
   // --- New: Protect PDF ---

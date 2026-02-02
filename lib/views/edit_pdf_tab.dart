@@ -17,7 +17,7 @@ import 'watermark_screen.dart';
 import 'page_reorder_screen.dart';
 import 'pdf_metadata_screen.dart';
 import 'convert_pdf_screen.dart';
-import 'signature_screen.dart';
+import 'add_signature_screen.dart';
 import '../providers/document_provider.dart';
 import '../models/document_model.dart';
 import 'package:provider/provider.dart';
@@ -242,13 +242,13 @@ class _EditPdfTabState extends State<EditPdfTab> with TickerProviderStateMixin {
         'color': const Color(0xFF059669),
         'action': 'extract_images'
       },
-      // {
-      //   'title': 'Add Signature',
-      //   'subtitle': 'Sign document',
-      //   'icon': Icons.draw_rounded,
-      //   'color': const Color(0xFF6366F1),
-      //   'action': 'signature'
-      // },
+      {
+        'title': 'Add Signature',
+        'subtitle': 'Sign document',
+        'icon': Icons.draw_rounded,
+        'color': const Color(0xFF6366F1),
+        'action': 'signature'
+      },
       {
         'title': 'Watermark',
         'subtitle': 'Brand protection',
@@ -663,10 +663,10 @@ class _EditPdfTabState extends State<EditPdfTab> with TickerProviderStateMixin {
         _selectPdfAndNavigate(
             context, (file) => ExtractImagesScreen(initialPdfFile: file));
         break;
-      // case 'signature':
-      //   _selectPdfAndNavigate(
-      //       context, (file) => SignatureScreen(initialPdfFile: file));
-      //   break;
+      case 'signature':
+        _selectPdfAndNavigate(
+            context, (file) => AddSignatureScreen(pdfFile: file));
+        break;
       case 'watermark':
         _selectPdfAndNavigate(
             context, (file) => WatermarkScreen(initialPdfFile: file));

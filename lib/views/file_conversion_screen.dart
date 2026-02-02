@@ -65,16 +65,7 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
       return;
     }
 
-    final path = _selectedFile!.path.toLowerCase();
-    if (_mode == _ConversionMode.wordToPdf && !path.endsWith('.docx')) {
-      _showSnack('Only DOCX files are supported right now.');
-      return;
-    }
-    if (_mode == _ConversionMode.pdfToWord && !path.endsWith('.pdf')) {
-      _showSnack('Please select a PDF file.');
-      return;
-    }
-
+    // Validate file exists and is readable
     if (!await _selectedFile!.exists()) {
       setState(() {
         _selectedFile = null;
@@ -84,6 +75,24 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
       return;
     }
 
+    final path = _selectedFile!.path.toLowerCase();
+    
+    // Validate file extension
+    if (_mode == _ConversionMode.wordToPdf && !path.endsWith('.docx') && !path.endsWith('.doc')) {
+      _showSnack('Only DOCX files are supported for Word to PDF conversion.');
+      return;
+    }
+    if (_mode == _ConversionMode.pdfToWord && !path.endsWith('.pdf')) {
+      _showSnack('Please select a valid PDF file.');
+      return;
+    }
+
+    // Check file size (optional: warn if too large)
+    final fileSize = await _safeLength(_selectedFile!);
+    if (fileSize != null && fileSize > 100 * 1024 * 1024) { // 100MB
+      _showSnack('File is larger than 100MB. Conversion may take longer.');
+    }
+
     setState(() {
       _isProcessing = true;
       _statusMessage = 'Preparing file...';
@@ -91,16 +100,33 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
 
     try {
       File? output;
+      
       if (_mode == _ConversionMode.pdfToWord) {
         setState(() {
-          _statusMessage = 'Extracting content from PDF...';
+          _statusMessage = 'Extracting text from PDF...';
         });
+        print('Starting PDF to Word conversion for: ${_selectedFile!.path}');
         output = await _pdfService.convertPdfToWord(pdfFile: _selectedFile!);
+        
+        if (output == null) {
+          if (mounted) {
+            _showSnack('PDF conversion failed. The file may not contain extractable text.');
+          }
+          return;
+        }
       } else {
         setState(() {
-          _statusMessage = 'Building PDF from Word...';
+          _statusMessage = 'Converting Word to PDF...';
         });
+        print('Starting Word to PDF conversion for: ${_selectedFile!.path}');
         output = await _pdfService.convertWordToPdf(wordFile: _selectedFile!);
+        
+        if (output == null) {
+          if (mounted) {
+            _showSnack('Word to PDF conversion failed. The file may be empty or corrupted. Check the logs for details.');
+          }
+          return;
+        }
       }
 
       if (!mounted) return;
@@ -110,15 +136,20 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
         _statusMessage = null;
       });
 
-      if (output != null) {
+      // Show success result
+      if (output != null && await output.exists()) {
         _showResultSheet(output);
       } else {
-        _showSnack('Conversion failed. Please try a different file.');
+        _showSnack('Conversion completed but file could not be verified.');
       }
     } catch (e) {
+      print('Conversion error: $e');
       if (!mounted) return;
-      setState(() => _isProcessing = false);
-      _showSnack('Error converting file: $e');
+      setState(() {
+        _isProcessing = false;
+        _statusMessage = null;
+      });
+      _showSnack('Conversion error: ${e.toString()}');
     }
   }
 
@@ -254,20 +285,32 @@ class _FileConversionScreenState extends State<FileConversionScreen> {
 
   Future<void> _openPreview(File file, {required bool isPdf}) async {
     if (isPdf) {
-      final pages = await _pdfService.getPdfPageCount(file) ?? 1;
-      if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => PDFViewerScreen(
-            pdfFile: file,
-            title: p.basenameWithoutExtension(file.path),
-            pageCount: pages,
+      try {
+        final pages = await _pdfService.getPdfPageCount(file);
+        if (!mounted) return;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => PDFViewerScreen(
+              pdfFile: file,
+              title: p.basenameWithoutExtension(file.path),
+              pageCount: pages,
+            ),
           ),
-        ),
-      );
+        );
+      } catch (e) {
+        if (mounted) {
+          _showSnack('Error loading PDF: $e');
+        }
+      }
     } else {
-      await Utils.openFile(file.path);
+      try {
+        await Utils.openFile(file.path);
+      } catch (e) {
+        if (mounted) {
+          _showSnack('Error opening file: $e');
+        }
+      }
     }
   }
 
