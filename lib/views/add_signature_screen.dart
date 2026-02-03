@@ -623,9 +623,8 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
       // Get screen dimensions from the PDF viewer
       RenderBox? renderBox =
           _pdfViewKey.currentContext?.findRenderObject() as RenderBox?;
-      final screenWidth =
-          renderBox?.size.width ?? MediaQuery.of(context).size.width - 32;
-      final screenHeight = renderBox?.size.height ?? 500;
+      final viewerWidth = renderBox?.size.width ?? MediaQuery.of(context).size.width - 32;
+      final viewerHeight = renderBox?.size.height ?? 500;
 
       // Convert signature bytes to PdfBitmap
       final bitmap = sf.PdfBitmap(widget.signatureBytes);
@@ -635,23 +634,49 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
         final page = document.pages[pageIndex];
         final pageSize = page.size;
 
-        // Calculate position mapping from screen to PDF coordinates
-        // Screen: top-left origin, PDF: bottom-left origin
-        final scaleX = pageSize.width / screenWidth;
-        final scaleY = pageSize.height / screenHeight;
+        // Calculate the actual displayed PDF page dimensions considering aspect ratio
+        // The PDF viewer centers and fits the page within the viewer bounds
+        final pageAspectRatio = pageSize.width / pageSize.height;
+        final viewerAspectRatio = viewerWidth / viewerHeight;
 
-        final pdfX = _signatureX * scaleX;
-        final pdfY = pageSize.height -
-            (_signatureY * scaleY) -
-            (_signatureHeight * scaleY);
+        double displayedPageWidth = viewerWidth;
+        double displayedPageHeight = viewerHeight;
+        double offsetX = 0.0;
+        double offsetY = 0.0;
+
+        if (pageAspectRatio > viewerAspectRatio) {
+          // Page is wider - fit to width
+          displayedPageWidth = viewerWidth;
+          displayedPageHeight = viewerWidth / pageAspectRatio;
+          offsetY = (viewerHeight - displayedPageHeight) / 2;
+        } else {
+          // Page is taller - fit to height
+          displayedPageHeight = viewerHeight;
+          displayedPageWidth = viewerHeight * pageAspectRatio;
+          offsetX = (viewerWidth - displayedPageWidth) / 2;
+        }
+
+        // Calculate scale factors from screen to PDF coordinates
+        final scaleX = pageSize.width / displayedPageWidth;
+        final scaleY = pageSize.height / displayedPageHeight;
+
+        // Convert screen signature position to PDF coordinates
+        // Account for the offset and scale
+        final pdfX = (_signatureX - offsetX) * scaleX;
+        final pdfY = (_signatureY - offsetY) * scaleY;
         final pdfWidth = _signatureWidth * scaleX;
         final pdfHeight = _signatureHeight * scaleY;
 
-        // Draw signature on PDF
-        page.graphics.drawImage(
-          bitmap,
-          Rect.fromLTWH(pdfX, pdfY, pdfWidth, pdfHeight),
-        );
+        // Ensure coordinates are within bounds
+        if (pdfX >= 0 && pdfY >= 0 && 
+            pdfX + pdfWidth <= pageSize.width && 
+            pdfY + pdfHeight <= pageSize.height) {
+          // Draw signature on PDF
+          page.graphics.drawImage(
+            bitmap,
+            Rect.fromLTWH(pdfX, pdfY, pdfWidth, pdfHeight),
+          );
+        }
       }
 
       // Save the document
@@ -987,60 +1012,59 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                           if (constraints.biggest.isEmpty) {
                             return const SizedBox.shrink();
                           }
-                          return Stack(
-                            children: [
-                              // PDF Preview with actual page rendering
-                              Positioned.fill(
-                                child: SfPdfViewer.file(
-                                  widget.pdfFile,
-                                  key: _pdfViewKey,
-                                  controller: _pdfController,
-                                  initialPageNumber: _currentPage,
-                                  canShowScrollHead: false,
-                                  canShowScrollStatus: false,
-                                  canShowPaginationDialog: false,
-                                  pageLayoutMode: PdfPageLayoutMode.single,
-                                  onPageChanged: (details) {
-                                    if (!mounted) {
-                                      return;
-                                    }
-                                    setState(() {
-                                      _currentPage = details.newPageNumber;
-                                    });
-                                  },
-                                  onDocumentLoaded: (details) {
-                                    if (!mounted) {
-                                      return;
-                                    }
-                                    setState(() {
-                                      _totalPages =
-                                          details.document.pages.count;
-                                    });
-                                  },
-                                ),
-                              ),
-                              // Draggable Signature
-                              Positioned(
-                                left: _signatureX,
-                                top: _signatureY,
-                                child: GestureDetector(
-                                  onPanUpdate: (details) {
-                                    setState(() {
-                                      _signatureX += details.delta.dx;
-                                      _signatureY += details.delta.dy;
+                          return GestureDetector(
+                            onPanUpdate: (details) {
+                              setState(() {
+                                _signatureX += details.delta.dx;
+                                _signatureY += details.delta.dy;
 
-                                      // Keep within bounds
-                                      _signatureX = _signatureX.clamp(
-                                        0.0,
-                                        constraints.maxWidth - _signatureWidth,
-                                      );
-                                      _signatureY = _signatureY.clamp(
-                                        0.0,
-                                        constraints.maxHeight -
-                                            _signatureHeight,
-                                      );
-                                    });
-                                  },
+                                // Keep within bounds
+                                _signatureX = _signatureX.clamp(
+                                  0.0,
+                                  constraints.maxWidth - _signatureWidth,
+                                );
+                                _signatureY = _signatureY.clamp(
+                                  0.0,
+                                  constraints.maxHeight - _signatureHeight,
+                                );
+                              });
+                            },
+                            child: Stack(
+                              children: [
+                                // PDF Preview with actual page rendering
+                                Positioned.fill(
+                                  child: SfPdfViewer.file(
+                                    widget.pdfFile,
+                                    key: _pdfViewKey,
+                                    controller: _pdfController,
+                                    initialPageNumber: _currentPage,
+                                    canShowScrollHead: false,
+                                    canShowScrollStatus: false,
+                                    canShowPaginationDialog: false,
+                                    pageLayoutMode: PdfPageLayoutMode.single,
+                                    onPageChanged: (details) {
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      setState(() {
+                                        _currentPage = details.newPageNumber;
+                                      });
+                                    },
+                                    onDocumentLoaded: (details) {
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      setState(() {
+                                        _totalPages =
+                                            details.document.pages.count;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                // Draggable Signature Overlay
+                                Positioned(
+                                  left: _signatureX,
+                                  top: _signatureY,
                                   child: Container(
                                     width: _signatureWidth,
                                     height: _signatureHeight,
@@ -1087,8 +1111,8 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
                         },
                       ),

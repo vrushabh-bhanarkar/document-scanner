@@ -592,6 +592,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
       },
+      {
+        'icon': Icons.document_scanner_rounded,
+        'title': 'Doc Scanner',
+        'subtitle': 'Advanced scanning tool',
+        'color': const Color.fromARGB(255, 48, 169, 202),
+        'gradient': AppColors.tealGradientVibrant,
+        'onTap': null,
+      },
+      {
+        'icon': Icons.sync_alt_rounded,
+        'title': 'Convert',
+        'subtitle': 'Word ↔ PDF',
+        'color': AppColors.amber,
+        'gradient': AppColors.emberGradientVibrant,
+        'onTap': null,
+      },
     ];
 
     return Column(
@@ -610,6 +626,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           crossAxisSpacing: 10.w,
           children: List.generate(quickActions.length, (index) {
             final action = quickActions[index];
+            final bool disabled = (action['onTap'] as VoidCallback?) == null;
             return _buildActionCard(
               icon: action['icon'] as IconData,
               title: action['title'] as String,
@@ -617,6 +634,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               color: action['color'] as Color,
               gradient: action['gradient'] as LinearGradient,
               onTap: action['onTap'] as VoidCallback?,
+              disabled: disabled,
             );
           }),
         ),
@@ -631,114 +649,160 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     required Color color,
     required LinearGradient gradient,
     VoidCallback? onTap,
+    bool disabled = false,
   }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
+        onTap: disabled ? null : onTap,
         borderRadius: BorderRadius.circular(20.r),
-        splashColor: color.withOpacity(0.05),
-        highlightColor: color.withOpacity(0.08),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          padding: EdgeInsets.all(20.w),
-          decoration: BoxDecoration(
-            gradient: gradient,
-            borderRadius: BorderRadius.circular(24.r),
-            border: Border.all(
-              color: const Color.fromARGB(255, 39, 37, 37).withOpacity(0.18),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 8.r,
-                offset: Offset(0, 4.h),
-                spreadRadius: 0,
-              ),
-              BoxShadow(
-                color: Colors.black.withOpacity(0.02),
-                blurRadius: 12.r,
-                offset: Offset(0, 6.h),
-                spreadRadius: 0,
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Hero(
-                tag: title,
-                child: Container(
-                  width: 50.w,
-                  height: 50.h,
-                  decoration: BoxDecoration(
-                    gradient: gradient,
-                    borderRadius: BorderRadius.circular(18.r),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: color.withOpacity(0.25),
-                    //     blurRadius: 8.r,
-                    //     offset: Offset(0, 3.h),
-                    //   ),
-                    // ],
-                  ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 32.sp,
-                  ),
+        splashColor: disabled ? Colors.transparent : color.withOpacity(0.05),
+        highlightColor: disabled ? Colors.transparent : color.withOpacity(0.08),
+        child: Stack(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              padding: EdgeInsets.all(20.w),
+              decoration: BoxDecoration(
+                gradient: gradient,
+                borderRadius: BorderRadius.circular(24.r),
+                border: Border.all(
+                  color:
+                      const Color.fromARGB(255, 39, 37, 37).withOpacity(0.18),
+                  width: 1.5,
                 ),
-              ),
-              SizedBox(height: 15.h),
-              Text(
-                title,
-                style: AppTextStyles.titleLarge.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  letterSpacing: -0.4,
-                  fontSize: 17.sp,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Text(
-                subtitle,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: Colors.white.withOpacity(0.92),
-                  height: 1.4,
-                  fontSize: 11.sp,
-                ),
-              ),
-              SizedBox(height: 18.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.38),
-                        borderRadius: BorderRadius.circular(2.r),
-                      ),
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.04),
+                    blurRadius: 8.r,
+                    offset: Offset(0, 4.h),
+                    spreadRadius: 0,
                   ),
-                  SizedBox(width: 8.w),
-                  Container(
-                    padding: EdgeInsets.all(6.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    child: Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
-                      size: 18.sp,
-                    ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.02),
+                    blurRadius: 12.r,
+                    offset: Offset(0, 6.h),
+                    spreadRadius: 0,
                   ),
                 ],
               ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Hero(
+                    tag: title,
+                    child: Container(
+                      width: 50.w,
+                      height: 50.h,
+                      decoration: BoxDecoration(
+                        gradient: gradient,
+                        borderRadius: BorderRadius.circular(18.r),
+                      ),
+                      child: Icon(
+                        icon,
+                        color: Colors.white,
+                        size: 32.sp,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 15.h),
+                  Text(
+                    title,
+                    style: AppTextStyles.titleLarge.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      letterSpacing: -0.4,
+                      fontSize: 17.sp,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.white.withOpacity(0.92),
+                      height: 1.4,
+                      fontSize: 11.sp,
+                    ),
+                  ),
+                  SizedBox(height: 18.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 4.h,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.38),
+                            borderRadius: BorderRadius.circular(2.r),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Container(
+                        padding: EdgeInsets.all(6.w),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                        child: Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Colors.white,
+                          size: 18.sp,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            // Disabled overlay + badge
+            if (disabled) ...[
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(24.r),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 12.w,
+                top: 12.h,
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(14.r),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.lock_clock_rounded,
+                        color: Colors.white,
+                        size: 12.sp,
+                      ),
+                      SizedBox(width: 2.w),
+                      Text(
+                        'Coming Soon',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 7.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );

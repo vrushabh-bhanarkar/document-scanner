@@ -73,26 +73,35 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-
-   static const LinearGradient HeroSectionGradient = LinearGradient(
-    colors: [Color.fromARGB(255, 132, 158, 202), Color.fromARGB(255, 82, 86, 95)],
+  static const LinearGradient HeroSectionGradient = LinearGradient(
+    colors: [
+      Color.fromARGB(255, 132, 158, 202),
+      Color.fromARGB(255, 82, 86, 95)
+    ],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );
 
   static const LinearGradient primaryGradientVibrant = LinearGradient(
-    colors: [Color.fromARGB(255, 87, 143, 241), Color.fromARGB(255, 62, 81, 112), Color.fromARGB(255, 72, 77, 85)],
+    colors: [
+      Color.fromARGB(255, 87, 143, 241),
+      Color.fromARGB(255, 62, 81, 112),
+      Color.fromARGB(255, 72, 77, 85)
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     stops: [0.0, 0.5, 1.0],
   );
 
-   static const LinearGradient heroSectionGradientVibrant = LinearGradient(
-    colors: [Color.fromRGBO(11, 49, 114, 1), Color.fromARGB(6, 56, 103, 185), Color.fromARGB(255, 7, 17, 36)],
-    begin: Alignment.centerLeft,
-    end: Alignment.centerRight,
-    stops: [0.1,0.5, 1.0]
-  );
+  static const LinearGradient heroSectionGradientVibrant = LinearGradient(
+      colors: [
+        Color.fromRGBO(11, 49, 114, 1),
+        Color.fromARGB(6, 56, 103, 185),
+        Color.fromARGB(255, 7, 17, 36)
+      ],
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      stops: [0.1, 0.5, 1.0]);
 
   static const LinearGradient secondaryTealGradient = LinearGradient(
     colors: [secondaryTeal, secondaryTealLight],
@@ -106,13 +115,16 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-   static const LinearGradient emeraldGradientVibrant = LinearGradient(
-    colors: [Color.fromARGB(255, 54, 173, 70), Color.fromARGB(255, 73, 112, 79), Color.fromARGB(255, 72, 77, 85)],
+  static const LinearGradient emeraldGradientVibrant = LinearGradient(
+    colors: [
+      Color.fromARGB(255, 54, 173, 70),
+      Color.fromARGB(255, 73, 112, 79),
+      Color.fromARGB(255, 72, 77, 85)
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     stops: [0.0, 0.5, 1.0],
   );
-
 
   static const LinearGradient purpleGradient = LinearGradient(
     colors: [purple, purpleLight],
@@ -121,12 +133,37 @@ class AppColors {
   );
 
   static const LinearGradient purpleGradientVibrant = LinearGradient(
-    colors: [Color.fromARGB(255, 161, 126, 177), Color.fromARGB(255, 102, 67, 117), Color.fromARGB(255, 72, 77, 85)],
+    colors: [
+      Color.fromARGB(255, 161, 126, 177),
+      Color.fromARGB(255, 102, 67, 117),
+      Color.fromARGB(255, 72, 77, 85)
+    ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     stops: [0.0, 0.5, 1.0],
   );
 
+  static const LinearGradient emberGradientVibrant = LinearGradient(
+    colors: [
+      Color.fromARGB(255, 202, 175, 94),
+      Color.fromRGBO(118, 110, 26, 1),
+      Color.fromARGB(255, 66, 66, 14)
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    stops: [0.0, 0.5, 1.0],
+  );
+
+  static const LinearGradient tealGradientVibrant = LinearGradient(
+    colors: [
+      Color.fromRGBO(64, 158, 186, 1),
+      Color.fromARGB(255, 23, 94, 107),
+      Color.fromARGB(255, 6, 44, 47)
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    stops: [0.0, 0.5, 1.0],
+  );
 
   static const LinearGradient amberGradient = LinearGradient(
     colors: [amber, amberLight],
