@@ -38,22 +38,23 @@ class AppColors {
 
   // Neutral Colors - Modern Gray Scale with white background priority
   static const Color white = Color(0xFFFFFFFF);
-  static const Color gray50 = Color(0xFFF7F7F7); // Light gray background
-  static const Color gray100 = Color(0xFFF3F4F6);
-  static const Color gray200 = Color(0xFFE5E7EB);
-  static const Color gray300 = Color(0xFFD1D5DB);
-  static const Color gray400 = Color(0xFF9CA3AF);
-  static const Color gray500 = Color(0xFF6B7280);
-  static const Color gray600 = Color(0xFF4B5563);
-  static const Color gray700 = Color(0xFF374151);
-  static const Color gray800 = Color(0xFF1F2937);
-  static const Color gray900 = Color(0xFF111827);
-  static const Color black = Color(0xFF000000);
+  static const Color gray50 = Color(0xFFFAFAFA); // Softer light gray background
+  static const Color gray100 = Color(0xFFF5F5F5);
+  static const Color gray200 = Color(0xFFEEEEEE);
+  static const Color gray300 = Color(0xFFE0E0E0);
+  static const Color gray400 = Color(0xFFBDBDBD);
+  static const Color gray500 = Color(0xFF9E9E9E);
+  static const Color gray600 = Color(0xFF757575);
+  static const Color gray700 = Color(0xFF616161);
+  static const Color gray800 = Color(0xFF424242);
+  static const Color gray900 = Color(0xFF212121);
+  static const Color black = Color(0xFF0A0A0A);
 
-  // Surface Colors - Enhanced for white background
-  static const Color background = Color(0xFFFFFFFF); // Pure white background
+  // Surface Colors - Enhanced for white background with subtle depth
+  static const Color background =
+      Color(0xFFFAFAFA); // Softer white for less eye strain
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF7F7F7);
+  static const Color surfaceVariant = Color(0xFFF5F5F5);
   static const Color surfaceElevated = Color(0xFFFFFFFF);
 
   // Status Colors
@@ -84,9 +85,9 @@ class AppColors {
 
   static const LinearGradient primaryGradientVibrant = LinearGradient(
     colors: [
-      Color.fromARGB(255, 87, 143, 241),
-      Color.fromARGB(255, 62, 81, 112),
-      Color.fromARGB(255, 72, 77, 85)
+      Color.fromARGB(255, 99, 153, 255), // Softer, more modern blue
+      Color.fromARGB(255, 74, 108, 188), // Mid-tone blue
+      Color.fromARGB(255, 55, 75, 100) // Deeper accent
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -117,9 +118,9 @@ class AppColors {
 
   static const LinearGradient emeraldGradientVibrant = LinearGradient(
     colors: [
-      Color.fromARGB(255, 54, 173, 70),
-      Color.fromARGB(255, 73, 112, 79),
-      Color.fromARGB(255, 72, 77, 85)
+      Color.fromARGB(255, 76, 194, 110), // Lighter, modern emerald
+      Color.fromARGB(255, 52, 140, 85), // Mid-tone emerald
+      Color.fromARGB(255, 38, 92, 60) // Deeper accent
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -134,9 +135,9 @@ class AppColors {
 
   static const LinearGradient purpleGradientVibrant = LinearGradient(
     colors: [
-      Color.fromARGB(255, 161, 126, 177),
-      Color.fromARGB(255, 102, 67, 117),
-      Color.fromARGB(255, 72, 77, 85)
+      Color.fromARGB(255, 184, 152, 205), // Lighter, modern purple
+      Color.fromARGB(255, 130, 92, 157), // Mid-tone purple
+      Color.fromARGB(255, 90, 60, 110) // Deeper accent
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -195,7 +196,7 @@ class AppTextStyles {
     fontSize: 32,
     fontWeight: FontWeight.w800,
     color: AppColors.gray900,
-    letterSpacing: -1.0,
+    letterSpacing: -0.8,
     height: 1.2,
   );
 
@@ -203,7 +204,7 @@ class AppTextStyles {
     fontSize: 28,
     fontWeight: FontWeight.w700,
     color: AppColors.gray900,
-    letterSpacing: -0.8,
+    letterSpacing: -0.6,
     height: 1.3,
   );
 

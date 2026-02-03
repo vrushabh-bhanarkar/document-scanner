@@ -244,13 +244,6 @@ class _EditPdfTabState extends State<EditPdfTab> with TickerProviderStateMixin {
         'action': 'extract_images'
       },
       {
-        'title': 'Add Signature',
-        'subtitle': 'Sign document',
-        'icon': Icons.draw_rounded,
-        'color': const Color(0xFF6366F1),
-        'action': 'signature'
-      },
-      {
         'title': 'Reorder',
         'subtitle': 'Rearrange pages',
         'icon': Icons.reorder_rounded,
