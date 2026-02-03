@@ -3,15 +3,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
 
 import '../core/themes.dart';
 import '../widgets/banner_ad_widget.dart';
 import '../widgets/interstitial_ad_helper.dart';
 import '../widgets/ad_config.dart';
-import '../services/pdf_service.dart';
 import '../providers/subscription_provider.dart';
 import 'create_pdf_screen.dart';
 import '../services/scan_quota_service.dart';
@@ -19,8 +16,6 @@ import '../services/subscription_service.dart';
 import 'image_to_pdf_screen.dart';
 import 'edit_pdf_tab.dart';
 import 'full_edit_pdf_screen.dart';
-import 'convert_pdf_screen.dart';
-import 'file_conversion_screen.dart';
 import '../main.dart' as main;
 
 class HomeScreen extends StatefulWidget {
@@ -89,7 +84,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
                   sliver: SliverToBoxAdapter(
                     child: _buildHeroSection(context),
                   ),
@@ -170,115 +166,113 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   //   );
   // }
 
-
-   Widget _buildHeroSection(BuildContext context) {
-  return Container(
-    width: double.infinity,
-    margin: EdgeInsets.symmetric(horizontal: 1.w), // Slight breathing room
-    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-    decoration: BoxDecoration(
-      gradient: AppColors. HeroSectionGradient,
-      borderRadius: BorderRadius.circular(20.r), // More rounded for modern feel
-      // boxShadow: [
-      //   BoxShadow(
-      //     color: AppColors.primaryBlueAccent.withOpacity(0.15),
-      //     blurRadius: 8,
-      //     offset: const Offset(0, 4),
-      //   ),
-      // ],
-    ),
-    child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Glassmorphic Icon Container
-            SizedBox(
-              height: 64.r,
-              width: 64.r,
-    
-                    child: Image.asset(
-                      'assets/icons/sleekscan.png',
-                      height: 60.r,
-                      width: 60.r,
-                      errorBuilder: (_, __, ___) => Icon(
-                        Icons.document_scanner_rounded,
-                        color: Colors.white,
-                        size: 32.sp,
-                      ),
-                    ),
-                  ),
-
-            SizedBox(width: 18.w),
-
-            // Text content with better typography
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'SleekScan',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 22.sp,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  SizedBox(height: 2.h),
-                  Text(
-                    'Professional PDF Tools to create, edit and convert PDFs',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontWeight: FontWeight.w500,
-                      fontSize: 10.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-               SizedBox(width: 15.w),
-            // Premium Floating-style Button
-            _buildCreateButton(context),
-          ],
-        ),
-  );
-}
-   
-
-  Widget _buildCreateButton(BuildContext context) {
-  return GestureDetector(
-    onTap: () => _handleNavigation(context),
-    child: Container(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+  Widget _buildHeroSection(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: EdgeInsets.symmetric(horizontal: 1.w), // Slight breathing room
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        gradient: AppColors.HeroSectionGradient,
+        borderRadius:
+            BorderRadius.circular(20.r), // More rounded for modern feel
+        // boxShadow: [
+        //   BoxShadow(
+        //     color: AppColors.primaryBlueAccent.withOpacity(0.15),
+        //     blurRadius: 8,
+        //     offset: const Offset(0, 4),
+        //   ),
+        // ],
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(Icons.add_rounded, color: AppColors.gray900, size: 16.sp),
-          SizedBox(width: 6.w),
-          Text(
-            'New',
-            style: TextStyle(
-              color: AppColors.gray900,
-              fontWeight: FontWeight.w800,
-              fontSize: 13.sp,
+          // Glassmorphic Icon Container
+          SizedBox(
+            height: 64.r,
+            width: 64.r,
+            child: Image.asset(
+              'assets/icons/sleekscan.png',
+              height: 60.r,
+              width: 60.r,
+              errorBuilder: (_, __, ___) => Icon(
+                Icons.document_scanner_rounded,
+                color: Colors.white,
+                size: 32.sp,
+              ),
             ),
           ),
+
+          SizedBox(width: 18.w),
+
+          // Text content with better typography
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'SleekScan',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 22.sp,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                SizedBox(height: 2.h),
+                Text(
+                  'Professional PDF Tools to create, edit and convert PDFs',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 10.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(width: 15.w),
+          // Premium Floating-style Button
+          _buildCreateButton(context),
         ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildCreateButton(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _handleNavigation(context),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.add_rounded, color: AppColors.gray900, size: 16.sp),
+            SizedBox(width: 6.w),
+            Text(
+              'New',
+              style: TextStyle(
+                color: AppColors.gray900,
+                fontWeight: FontWeight.w800,
+                fontSize: 13.sp,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void _handleNavigation(BuildContext context) {
     // Default action: navigate to Create PDF screen
@@ -586,19 +580,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
       },
       {
-        'icon': Icons.swap_horiz_rounded,
-        'title': 'Convert Files',
-        'subtitle': 'PDF ↔ Word',
-        'color': AppColors.secondaryTeal,
-        'gradient': AppColors.secondaryTealGradient,
-        'onTap': () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const FileConversionScreen(),
-              ),
-            ),
-      },
-      {
         'icon': Icons.edit_document,
         'title': 'Edit PDF',
         'subtitle': 'Edit existing PDFs',
@@ -726,7 +707,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 style: AppTextStyles.bodySmall.copyWith(
                   color: Colors.white.withOpacity(0.92),
                   height: 1.4,
-                  fontSize: 12.sp,
+                  fontSize: 11.sp,
                 ),
               ),
               SizedBox(height: 18.h),
@@ -761,164 +742,5 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
     );
-  }
-
-  void _showConvertOptions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        padding: EdgeInsets.all(24.w),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Choose Conversion Direction',
-              style: AppTextStyles.titleLarge.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AppColors.gray900,
-              ),
-            ),
-            SizedBox(height: 24.h),
-            ListTile(
-              leading: Container(
-                padding: EdgeInsets.all(12.w),
-                decoration: BoxDecoration(
-                  gradient: AppColors.secondaryTealGradient,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Icon(Icons.picture_as_pdf,
-                    color: Colors.white, size: 24.sp),
-              ),
-              title: Text('PDF to Other Formats',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: Text('Convert PDF to Word, Images, Text, HTML'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ConvertPdfScreen(),
-                  ),
-                );
-              },
-            ),
-            SizedBox(height: 12.h),
-            ListTile(
-              leading: Container(
-                padding: EdgeInsets.all(12.w),
-                decoration: BoxDecoration(
-                  gradient: AppColors.secondaryTealGradient,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child:
-                    Icon(Icons.description, color: Colors.white, size: 24.sp),
-              ),
-              title: Text('Word to PDF',
-                  style: TextStyle(fontWeight: FontWeight.w600)),
-              subtitle: Text('Convert DOCX files to PDF'),
-              onTap: () {
-                Navigator.pop(context);
-                _convertWordToPdf(context);
-              },
-            ),
-            SizedBox(height: 12.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _convertWordToPdf(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['docx'],
-    );
-
-    if (result != null && result.files.single.path != null) {
-      final wordFile = File(result.files.single.path!);
-
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(24.w),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16.h),
-                  Text('Converting Word to PDF...'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-
-      try {
-        final pdfService = PDFService();
-        final pdfFile = await pdfService.convertWordToPdf(wordFile: wordFile);
-
-        Navigator.pop(context); // Close loading dialog
-
-        if (pdfFile != null) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.green, size: 24.sp),
-                  SizedBox(width: 12.w),
-                  Expanded(child: Text('Conversion Complete!')),
-                ],
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Word document successfully converted to PDF.'),
-                  SizedBox(height: 12.h),
-                  Text('Saved to:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 6.h),
-                  Text(pdfFile.path, style: TextStyle(fontSize: 12.sp)),
-                ],
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('OK'),
-                ),
-              ],
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to convert Word to PDF'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      } catch (e) {
-        Navigator.pop(context); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 }

@@ -831,6 +831,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                             ),
                           ),
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
@@ -838,17 +839,20 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                                 color: isSelected
                                     ? Colors.white
                                     : Colors.grey[600],
-                                size: 32.sp,
+                                size: 26.sp,
                               ),
-                              SizedBox(height: 4.h),
-                              Text(
-                                '$pageNum',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.grey[800],
+                              SizedBox(height: 2.h),
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  '$pageNum',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.grey[800],
+                                  ),
                                 ),
                               ),
                             ],
@@ -980,98 +984,113 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                       borderRadius: BorderRadius.circular(16.r),
                       child: LayoutBuilder(
                         builder: (context, constraints) {
+                          if (constraints.biggest.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
                           return Stack(
-                        children: [
-                          // PDF Preview with actual page rendering
-                          SfPdfViewer.file(
-                            widget.pdfFile,
-                            key: _pdfViewKey,
-                            controller: _pdfController,
-                            initialPageNumber: _currentPage,
-                            canShowScrollHead: false,
-                            canShowScrollStatus: false,
-                            canShowPaginationDialog: false,
-                            pageLayoutMode: PdfPageLayoutMode.single,
-                            onPageChanged: (details) {
-                              setState(() {
-                                _currentPage = details.newPageNumber;
-                              });
-                            },
-                            onDocumentLoaded: (details) {
-                              setState(() {
-                                _totalPages = details.document.pages.count;
-                              });
-                            },
-                          ),
-                          // Draggable Signature
-                          Positioned(
-                            left: _signatureX,
-                            top: _signatureY,
-                            child: GestureDetector(
-                              onPanUpdate: (details) {
-                                setState(() {
-                                  _signatureX += details.delta.dx;
-                                  _signatureY += details.delta.dy;
-
-                                  // Keep within bounds
-                                    _signatureX = _signatureX.clamp(
-                                      0.0,
-                                      constraints.maxWidth - _signatureWidth);
-                                    _signatureY = _signatureY.clamp(
-                                      0.0,
-                                      constraints.maxHeight - _signatureHeight);
-                                });
-                              },
-                              child: Container(
-                                width: _signatureWidth,
-                                height: _signatureHeight,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: AppColors.primaryBlue,
-                                    width: 2,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                    ],
-                                  );
-                                },
-                                ),
-                                child: Stack(
-                                  children: [
-                                    Image.memory(
-                                      widget.signatureBytes,
-                                      fit: BoxFit.contain,
-                                      width: _signatureWidth,
-                                      height: _signatureHeight,
-                                    ),
-                                    // Drag handle indicator
-                                    Positioned(
-                                      top: 4,
-                                      right: 4,
-                                      child: Container(
-                                        padding: EdgeInsets.all(4.w),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.primaryBlue,
-                                          borderRadius:
-                                              BorderRadius.circular(4.r),
-                                        ),
-                                        child: Icon(
-                                          Icons.drag_indicator,
-                                          size: 16.sp,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                            children: [
+                              // PDF Preview with actual page rendering
+                              Positioned.fill(
+                                child: SfPdfViewer.file(
+                                  widget.pdfFile,
+                                  key: _pdfViewKey,
+                                  controller: _pdfController,
+                                  initialPageNumber: _currentPage,
+                                  canShowScrollHead: false,
+                                  canShowScrollStatus: false,
+                                  canShowPaginationDialog: false,
+                                  pageLayoutMode: PdfPageLayoutMode.single,
+                                  onPageChanged: (details) {
+                                    if (!mounted) {
+                                      return;
+                                    }
+                                    setState(() {
+                                      _currentPage = details.newPageNumber;
+                                    });
+                                  },
+                                  onDocumentLoaded: (details) {
+                                    if (!mounted) {
+                                      return;
+                                    }
+                                    setState(() {
+                                      _totalPages =
+                                          details.document.pages.count;
+                                    });
+                                  },
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
+                              // Draggable Signature
+                              Positioned(
+                                left: _signatureX,
+                                top: _signatureY,
+                                child: GestureDetector(
+                                  onPanUpdate: (details) {
+                                    setState(() {
+                                      _signatureX += details.delta.dx;
+                                      _signatureY += details.delta.dy;
+
+                                      // Keep within bounds
+                                      _signatureX = _signatureX.clamp(
+                                        0.0,
+                                        constraints.maxWidth - _signatureWidth,
+                                      );
+                                      _signatureY = _signatureY.clamp(
+                                        0.0,
+                                        constraints.maxHeight -
+                                            _signatureHeight,
+                                      );
+                                    });
+                                  },
+                                  child: Container(
+                                    width: _signatureWidth,
+                                    height: _signatureHeight,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: AppColors.primaryBlue,
+                                        width: 2,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Stack(
+                                      children: [
+                                        Image.memory(
+                                          widget.signatureBytes,
+                                          fit: BoxFit.contain,
+                                          width: _signatureWidth,
+                                          height: _signatureHeight,
+                                        ),
+                                        // Drag handle indicator
+                                        Positioned(
+                                          top: 4,
+                                          right: 4,
+                                          child: Container(
+                                            padding: EdgeInsets.all(4.w),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primaryBlue,
+                                              borderRadius:
+                                                  BorderRadius.circular(4.r),
+                                            ),
+                                            child: Icon(
+                                              Icons.drag_indicator,
+                                              size: 16.sp,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -1081,335 +1100,347 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                   flex: 2,
                   child: SingleChildScrollView(
                     child: Container(
-                Container(
-                  padding: EdgeInsets.all(20.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border(
-                      top: BorderSide(color: Colors.grey[200]!),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      // Page selector
-                      if (_totalPages > 1)
-                        Container(
-                          margin: EdgeInsets.only(bottom: 16.h),
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 16.w, vertical: 12.h),
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFF667EEA).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(
-                              color: const Color(0xFF667EEA)
-                                  .withValues(alpha: 0.3),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.picture_as_pdf,
-                                    color: const Color(0xFF667EEA),
-                                    size: 20.sp,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'Page $_currentPage of $_totalPages',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF667EEA),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.chevron_left,
-                                      color: _currentPage > 1
-                                          ? const Color(0xFF667EEA)
-                                          : Colors.grey[400],
-                                    ),
-                                    onPressed: _currentPage > 1
-                                        ? () {
-                                            _pdfController.previousPage();
-                                          }
-                                        : null,
-                                  ),
-                                  IconButton(
-                                    icon: Icon(
-                                      Icons.chevron_right,
-                                      color: _currentPage < _totalPages
-                                          ? const Color(0xFF667EEA)
-                                          : Colors.grey[400],
-                                    ),
-                                    onPressed: _currentPage < _totalPages
-                                        ? () {
-                                            _pdfController.nextPage();
-                                          }
-                                        : null,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                      padding: EdgeInsets.all(20.w),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          top: BorderSide(color: Colors.grey[200]!),
                         ),
-                      // Multi-page options
-                      if (_totalPages > 1)
-                        Container(
-                          margin: EdgeInsets.only(bottom: 16.h),
-                          padding: EdgeInsets.all(16.w),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12.r),
-                            border: Border.all(color: Colors.grey[200]!),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.layers,
-                                    color: const Color(0xFF667EEA),
-                                    size: 20.sp,
-                                  ),
-                                  SizedBox(width: 8.w),
-                                  Text(
-                                    'Apply to Pages',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.grey[800],
-                                    ),
-                                  ),
-                                ],
+                      ),
+                      child: Column(
+                        children: [
+                          // Page selector
+                          if (_totalPages > 1)
+                            Container(
+                              margin: EdgeInsets.only(bottom: 16.h),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.w,
+                                vertical: 12.h,
                               ),
-                              SizedBox(height: 12.h),
-                              // Radio options
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _applyToAllPages = false;
-                                    _selectedPages.clear();
-                                  });
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w, vertical: 10.h),
-                                  decoration: BoxDecoration(
-                                    color: !_applyToAllPages &&
-                                            _selectedPages.isEmpty
-                                        ? const Color(0xFF667EEA)
-                                            .withValues(alpha: 0.1)
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Row(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF667EEA)
+                                    .withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(
+                                  color: const Color(0xFF667EEA)
+                                      .withValues(alpha: 0.3),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
                                     children: [
                                       Icon(
-                                        !_applyToAllPages &&
+                                        Icons.picture_as_pdf,
+                                        color: const Color(0xFF667EEA),
+                                        size: 20.sp,
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Text(
+                                        'Page $_currentPage of $_totalPages',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: const Color(0xFF667EEA),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.chevron_left,
+                                          color: _currentPage > 1
+                                              ? const Color(0xFF667EEA)
+                                              : Colors.grey[400],
+                                        ),
+                                        onPressed: _currentPage > 1
+                                            ? () {
+                                                _pdfController.previousPage();
+                                              }
+                                            : null,
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.chevron_right,
+                                          color: _currentPage < _totalPages
+                                              ? const Color(0xFF667EEA)
+                                              : Colors.grey[400],
+                                        ),
+                                        onPressed: _currentPage < _totalPages
+                                            ? () {
+                                                _pdfController.nextPage();
+                                              }
+                                            : null,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          // Multi-page options
+                          if (_totalPages > 1)
+                            Container(
+                              margin: EdgeInsets.only(bottom: 16.h),
+                              padding: EdgeInsets.all(16.w),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[50],
+                                borderRadius: BorderRadius.circular(12.r),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.layers,
+                                        color: const Color(0xFF667EEA),
+                                        size: 20.sp,
+                                      ),
+                                      SizedBox(width: 8.w),
+                                      Text(
+                                        'Apply to Pages',
+                                        style: TextStyle(
+                                          fontSize: 15.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.grey[800],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 12.h),
+                                  // Radio options
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _applyToAllPages = false;
+                                        _selectedPages.clear();
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
+                                        vertical: 10.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: !_applyToAllPages &&
                                                 _selectedPages.isEmpty
-                                            ? Icons.radio_button_checked
-                                            : Icons.radio_button_unchecked,
-                                        color: const Color(0xFF667EEA),
-                                        size: 20.sp,
+                                            ? const Color(0xFF667EEA)
+                                                .withValues(alpha: 0.1)
+                                            : Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
                                       ),
-                                      SizedBox(width: 12.w),
-                                      Text(
-                                        'Current page only',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _applyToAllPages = true;
-                                    _selectedPages.clear();
-                                  });
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w, vertical: 10.h),
-                                  decoration: BoxDecoration(
-                                    color: _applyToAllPages
-                                        ? const Color(0xFF667EEA)
-                                            .withValues(alpha: 0.1)
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        _applyToAllPages
-                                            ? Icons.radio_button_checked
-                                            : Icons.radio_button_unchecked,
-                                        color: const Color(0xFF667EEA),
-                                        size: 20.sp,
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Text(
-                                        'All pages ($_totalPages pages)',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: Colors.grey[700],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 8.h),
-                              InkWell(
-                                onTap: () => _showPageSelector(),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 12.w, vertical: 10.h),
-                                  decoration: BoxDecoration(
-                                    color: _selectedPages.isNotEmpty
-                                        ? const Color(0xFF667EEA)
-                                            .withValues(alpha: 0.1)
-                                        : Colors.white,
-                                    borderRadius: BorderRadius.circular(8.r),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        _selectedPages.isNotEmpty
-                                            ? Icons.radio_button_checked
-                                            : Icons.radio_button_unchecked,
-                                        color: const Color(0xFF667EEA),
-                                        size: 20.sp,
-                                      ),
-                                      SizedBox(width: 12.w),
-                                      Expanded(
-                                        child: Text(
-                                          _selectedPages.isEmpty
-                                              ? 'Select specific pages'
-                                              : '${_selectedPages.length} page(s) selected',
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            color: Colors.grey[700],
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            !_applyToAllPages &&
+                                                    _selectedPages.isEmpty
+                                                ? Icons.radio_button_checked
+                                                : Icons.radio_button_unchecked,
+                                            color: const Color(0xFF667EEA),
+                                            size: 20.sp,
                                           ),
-                                        ),
+                                          SizedBox(width: 12.w),
+                                          Text(
+                                            'Current page only',
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              color: Colors.grey[700],
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 14.sp,
-                                        color: Colors.grey[400],
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _applyToAllPages = true;
+                                        _selectedPages.clear();
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
+                                        vertical: 10.h,
                                       ),
-                                    ],
+                                      decoration: BoxDecoration(
+                                        color: _applyToAllPages
+                                            ? const Color(0xFF667EEA)
+                                                .withValues(alpha: 0.1)
+                                            : Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            _applyToAllPages
+                                                ? Icons.radio_button_checked
+                                                : Icons.radio_button_unchecked,
+                                            color: const Color(0xFF667EEA),
+                                            size: 20.sp,
+                                          ),
+                                          SizedBox(width: 12.w),
+                                          Text(
+                                            'All pages ($_totalPages pages)',
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              color: Colors.grey[700],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 8.h),
+                                  InkWell(
+                                    onTap: () => _showPageSelector(),
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12.w,
+                                        vertical: 10.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: _selectedPages.isNotEmpty
+                                            ? const Color(0xFF667EEA)
+                                                .withValues(alpha: 0.1)
+                                            : Colors.white,
+                                        borderRadius:
+                                            BorderRadius.circular(8.r),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            _selectedPages.isNotEmpty
+                                                ? Icons.radio_button_checked
+                                                : Icons.radio_button_unchecked,
+                                            color: const Color(0xFF667EEA),
+                                            size: 20.sp,
+                                          ),
+                                          SizedBox(width: 12.w),
+                                          Expanded(
+                                            child: Text(
+                                              _selectedPages.isEmpty
+                                                  ? 'Select specific pages'
+                                                  : '${_selectedPages.length} page(s) selected',
+                                              style: TextStyle(
+                                                fontSize: 14.sp,
+                                                color: Colors.grey[700],
+                                              ),
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 14.sp,
+                                            color: Colors.grey[400],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          // Size slider
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.photo_size_select_small,
+                                color: Colors.grey[600],
+                                size: 20.sp,
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Size',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey[700],
+                                      ),
+                                    ),
+                                    Slider(
+                                      value: _signatureWidth,
+                                      min: 50,
+                                      max: 400,
+                                      divisions: 70,
+                                      label: '${_signatureWidth.round()}',
+                                      activeColor: AppColors.primaryBlue,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          _signatureWidth = value;
+                                          _signatureHeight = value * 0.5;
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.photo_size_select_large,
+                                color: AppColors.primaryBlue,
+                                size: 24.sp,
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 12.h),
+                          // Action buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.grey[700],
+                                    side: BorderSide(color: Colors.grey[300]!),
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 14.h),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(fontSize: 16.sp),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 12.w),
+                              Expanded(
+                                flex: 2,
+                                child: ElevatedButton.icon(
+                                  onPressed: _saveSignatureToPdf,
+                                  icon: const Icon(Icons.check),
+                                  label: Text(
+                                    'Save Signature',
+                                    style: TextStyle(fontSize: 16.sp),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primaryBlue,
+                                    foregroundColor: Colors.white,
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 14.h),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12.r),
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      // Size slider
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.photo_size_select_small,
-                            color: Colors.grey[600],
-                            size: 20.sp,
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Size',
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                                Slider(
-                                  value: _signatureWidth,
-                                  min: 50,
-                                  max: 400,
-                                  divisions: 70,
-                                  label: '${_signatureWidth.round()}',
-                                                      ),
-                                                    ),
-                                                  ),
-                                  activeColor: AppColors.primaryBlue,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _signatureWidth = value;
-                                      _signatureHeight = value * 0.5;
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.photo_size_select_large,
-                            color: AppColors.primaryBlue,
-                            size: 24.sp,
-                          ),
                         ],
                       ),
-                      SizedBox(height: 12.h),
-                      // Action buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: Colors.grey[700],
-                                side: BorderSide(color: Colors.grey[300]!),
-                                padding: EdgeInsets.symmetric(vertical: 14.h),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                              ),
-                              child: Text(
-                                'Cancel',
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            flex: 2,
-                            child: ElevatedButton.icon(
-                              onPressed: _saveSignatureToPdf,
-                              icon: const Icon(Icons.check),
-                              label: Text(
-                                'Save Signature',
-                                style: TextStyle(fontSize: 16.sp),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryBlue,
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 14.h),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ],

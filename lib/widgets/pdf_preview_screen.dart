@@ -163,19 +163,21 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.r),
-                child: SfPdfViewer.file(
-                  widget.pdfFile,
-                  controller: _pdfController,
-                  onDocumentLoaded: (details) {
-                    setState(() {
-                      _totalPages = details.document.pages.count;
-                    });
-                  },
-                  onPageChanged: (details) {
-                    setState(() {
-                      _currentPage = details.newPageNumber;
-                    });
-                  },
+                child: SizedBox.expand(
+                  child: SfPdfViewer.file(
+                    widget.pdfFile,
+                    controller: _pdfController,
+                    onDocumentLoaded: (details) {
+                      setState(() {
+                        _totalPages = details.document.pages.count;
+                      });
+                    },
+                    onPageChanged: (details) {
+                      setState(() {
+                        _currentPage = details.newPageNumber;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
