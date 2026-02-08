@@ -1,5 +1,4 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SubscriptionService {
@@ -8,16 +7,6 @@ class SubscriptionService {
   static const _kLastPaymentKey = 'last_payment_ts_v1';
 
   Future<bool> isSubscribed() async {
-    // First try RevenueCat (Purchases) for entitlement info
-    try {
-      final customerInfo = await Purchases.getCustomerInfo();
-      if (customerInfo.entitlements.active.isNotEmpty) {
-        return true;
-      }
-    } catch (e) {
-      // ignore and fallback to local prefs
-    }
-
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_kSubscribedKey) ?? false;
   }

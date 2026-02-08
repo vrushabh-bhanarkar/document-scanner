@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+// RevenueCat disabled for production
 import 'firebase_options.dart';
 
 import 'core/themes.dart';
@@ -36,7 +36,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Firebase
   try {
     await Firebase.initializeApp(
@@ -115,27 +115,7 @@ Future<void> main() async {
   // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
   await requestNotificationPermissionIfNeeded();
 
-  // Initialize RevenueCat (Purchases) BEFORE loading subscription state
-  try {
-    // RevenueCat public API key for SleekScan app
-    const revenueCatApiKey = 'test_QWBBmtPOyBQyCYASJqiQFFFMYgh';
-    
-    // Configure RevenueCat with platform-specific settings
-    final config = PurchasesConfiguration(revenueCatApiKey)
-      ..diagnosticsEnabled = true;  // Enable diagnostics in development
-    
-    await Purchases.configure(config);
-    
-    // Enable debug logs in development
-    await Purchases.setLogLevel(LogLevel.debug);
-    
-    // Optional: Set user ID for tracking (if user is logged in at startup)
-    // await Purchases.logIn('user_id');
-    
-    print('✅ RevenueCat Purchases configured successfully');
-  } catch (e) {
-    print('❌ Error initializing RevenueCat Purchases: $e');
-  }
+  // RevenueCat disabled: no purchases SDK initialization in production
 
   final subscriptionProvider = SubscriptionProvider();
   await subscriptionProvider.load();
@@ -200,7 +180,8 @@ Future<void> requestNotificationPermissionIfNeeded() async {
 class DocumentScannerApp extends StatelessWidget {
   final SubscriptionProvider subscriptionProvider;
 
-  const DocumentScannerApp({Key? key, required this.subscriptionProvider}) : super(key: key);
+  const DocumentScannerApp({Key? key, required this.subscriptionProvider})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {

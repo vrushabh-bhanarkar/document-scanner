@@ -16,6 +16,7 @@ import '../services/subscription_service.dart';
 import 'image_to_pdf_screen.dart';
 import 'edit_pdf_tab.dart';
 import 'full_edit_pdf_screen.dart';
+import 'document_scanner_screen.dart';
 import '../main.dart' as main;
 
 class HomeScreen extends StatefulWidget {
@@ -595,10 +596,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       {
         'icon': Icons.document_scanner_rounded,
         'title': 'Doc Scanner',
-        'subtitle': 'Advanced scanning tool',
+        'subtitle': 'Scan documents & IDs',
         'color': const Color.fromARGB(255, 48, 169, 202),
         'gradient': AppColors.tealGradientVibrant,
-        'onTap': null,
+        'onTap': () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const DocumentScannerScreen(),
+              ),
+            ),
       },
       {
         'icon': Icons.sync_alt_rounded,
