@@ -117,6 +117,9 @@ dependencies:
   
   # HTTP client for API calls
   http: ^1.1.0
+  supabase_flutter: ^2.18.3
+  purchases_flutter: ^11.0.0
+  firebase_storage: ^13.6.1
 
 dev_dependencies:
   flutter_test:

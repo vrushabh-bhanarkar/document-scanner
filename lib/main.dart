@@ -8,8 +8,8 @@ import 'dart:io';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
-// RevenueCat disabled for production
 import 'firebase_options.dart';
+import 'screens/scan_screen.dart';
 
 import 'core/themes.dart';
 import 'core/app_config.dart';
@@ -46,6 +46,7 @@ Future<void> main() async {
   } catch (e) {
     print('Error initializing Firebase: $e');
   }
+
   // Set up error handling
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
@@ -203,6 +204,8 @@ class DocumentScannerApp extends StatelessWidget {
             themeMode: ThemeMode.light, // Always light mode per spec
             home: const SplashScreen(),
             routes: {
+              '/scanner': (context) => const ScanScreen(),
+              '/scan_pro': (context) => const ScanScreen(),
               '/dashboard': (context) => const DashboardScreen(),
               '/recent_downloads': (context) => const RecentDownloadsScreen(),
               '/document-manage': (context) => const DocumentManagementScreen(),

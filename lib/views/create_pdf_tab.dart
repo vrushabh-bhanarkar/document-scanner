@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/themes.dart';
 import 'create_pdf_screen.dart';
 import 'image_to_pdf_screen.dart';
+import '../screens/scan_screen.dart';
 
 class CreatePdfTab extends StatefulWidget {
   const CreatePdfTab({Key? key}) : super(key: key);
@@ -258,9 +259,12 @@ class _CreatePdfTabState extends State<CreatePdfTab>
   }
 
   void _scanDocument() {
-    // Navigate to the scan document functionality
-    // Since we're in a tabbed structure, we can use a callback to change tabs
-    _showTabNavigationDialog('Scan Document', 2);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ScanScreen(),
+      ),
+    );
   }
 
   void _editPdf() {
