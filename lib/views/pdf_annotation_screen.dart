@@ -9,8 +9,7 @@ import '../widgets/pdf_preview_screen.dart';
 class PdfAnnotationScreen extends StatefulWidget {
   final File pdfFile;
 
-  const PdfAnnotationScreen({Key? key, required this.pdfFile})
-      : super(key: key);
+  const PdfAnnotationScreen({super.key, required this.pdfFile});
 
   @override
   State<PdfAnnotationScreen> createState() => _PdfAnnotationScreenState();
@@ -83,7 +82,7 @@ class _PdfAnnotationScreenState extends State<PdfAnnotationScreen> {
                       borderRadius: BorderRadius.circular(12.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.2),
+                          color: Colors.grey.withValues(alpha: 0.2),
                           spreadRadius: 2,
                           blurRadius: 8,
                           offset: const Offset(0, 4),
@@ -144,7 +143,7 @@ class _PdfAnnotationScreenState extends State<PdfAnnotationScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -317,7 +316,7 @@ class _PdfAnnotationScreenState extends State<PdfAnnotationScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -363,8 +362,8 @@ class _PdfAnnotationScreenState extends State<PdfAnnotationScreen> {
         annotations.add(Annotation(
           type: selectedTool,
           position: local,
-          color: selectedColor.withOpacity(
-              selectedTool == AnnotationTool.highlighter ? 0.5 : 1.0),
+          color: selectedColor.withValues(
+              alpha: selectedTool == AnnotationTool.highlighter ? 0.5 : 1.0),
           thickness: selectedThickness,
           points: [local],
           page: currentPage,
@@ -637,11 +636,9 @@ class Annotation {
       'type': type.toString().split('.').last,
       'text': text,
       'position': {'dx': position.dx, 'dy': position.dy},
-      'color': color.value,
+      'color': color.toARGB32(),
       'thickness': thickness,
-      'points': points
-          ?.map((p) => {'dx': p.dx, 'dy': p.dy})
-          .toList(),
+      'points': points?.map((p) => {'dx': p.dx, 'dy': p.dy}).toList(),
       'page': page,
       'canvasWidth': canvasSize.width,
       'canvasHeight': canvasSize.height,
@@ -669,7 +666,8 @@ class AnnotationPainter extends CustomPainter {
             paint.strokeCap = StrokeCap.round;
             paint.style = PaintingStyle.stroke;
             final path = Path();
-            path.moveTo(annotation.points!.first.dx, annotation.points!.first.dy);
+            path.moveTo(
+                annotation.points!.first.dx, annotation.points!.first.dy);
             for (int i = 1; i < annotation.points!.length; i++) {
               path.lineTo(annotation.points![i].dx, annotation.points![i].dy);
             }

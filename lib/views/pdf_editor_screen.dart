@@ -1,11 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../core/themes.dart';
 import '../services/pdf_service.dart';
-import '../providers/document_provider.dart';
 import '../models/document_model.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -41,7 +39,6 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
   final PdfViewerController _pdfController = PdfViewerController();
 
   late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
 
   bool _isLoading = true;
   String? _currentFilePath;
@@ -49,12 +46,8 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
   int _totalPages = 1;
   String? _errorMessage;
 
-  // UI State
-  bool _showColorPicker = false;
-
   // --- Page Management State ---
-  List<int> _selectedPages = [];
-  bool _isReorderMode = false;
+  final List<int> _selectedPages = [];
   List<int> _pageOrder = [];
 
   // Drawing/signature controllers
@@ -77,14 +70,6 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-    ));
 
     _initializePdf();
   }
@@ -207,13 +192,13 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primaryBlue.withOpacity(0.15),
-                        AppColors.primaryBlue.withOpacity(0.05),
+                        AppColors.primaryBlue.withValues(alpha: 0.15),
+                        AppColors.primaryBlue.withValues(alpha: 0.05),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20.r),
                     border: Border.all(
-                      color: AppColors.primaryBlue.withOpacity(0.3),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.3),
                       width: 1.5,
                     ),
                   ),
@@ -256,7 +241,8 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryBlue.withOpacity(0.4),
+                                color: AppColors.primaryBlue
+                                    .withValues(alpha: 0.4),
                                 blurRadius: 20,
                                 offset: const Offset(0, 8),
                               ),
@@ -332,8 +318,8 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
                                 borderRadius: BorderRadius.circular(16.r),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        AppColors.primaryBlue.withOpacity(0.1),
+                                    color: AppColors.primaryBlue
+                                        .withValues(alpha: 0.1),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -371,17 +357,17 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
                       ),
                       borderRadius: BorderRadius.circular(28.r),
                       border: Border.all(
-                        color: AppColors.primaryBlue.withOpacity(0.2),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.2),
                         width: 1.5,
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primaryBlue.withOpacity(0.15),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.15),
                           blurRadius: 30,
                           offset: const Offset(0, 12),
                         ),
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 20,
                           offset: const Offset(0, 6),
                         ),
@@ -518,7 +504,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
                     boxShadow: [
                       if (selected)
                         BoxShadow(
-                          color: AppColors.primaryBlue.withOpacity(0.3),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -531,7 +517,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
                         Container(
                           padding: EdgeInsets.all(4.w),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -576,7 +562,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
         gradient: LinearGradient(
           colors: [
             buttonColor,
-            buttonColor.withOpacity(0.8),
+            buttonColor.withValues(alpha: 0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -584,7 +570,7 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: buttonColor.withOpacity(0.3),
+            color: buttonColor.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -1554,30 +1540,6 @@ class _PdfEditorScreenState extends State<PdfEditorScreen>
       _showSnackBar('Failed to insert PDF page: $e', isError: true);
     } finally {
       setState(() => _isLoading = false);
-    }
-  }
-
-  // --- Page Management Actions ---
-  Future<void> _onDeletePages() async {
-    if (_currentFilePath == null || _selectedPages.isEmpty) return;
-    setState(() => _isLoading = true);
-    final file = File(_currentFilePath!);
-    final newFile = await _pdfService.removePagesFromPDF(
-      pdfFile: file,
-      pagesToRemove: _selectedPages,
-      outputTitle: widget.document?.title ?? 'edited_pdf',
-    );
-    if (newFile != null) {
-      setState(() {
-        _currentFilePath = newFile.path;
-        _selectedPages.clear();
-        _isLoading = false;
-      });
-      _initializePdf();
-      _showSnackBar('Pages deleted!');
-    } else {
-      setState(() => _isLoading = false);
-      _showSnackBar('Failed to delete pages', isError: true);
     }
   }
 

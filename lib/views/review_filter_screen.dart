@@ -15,9 +15,9 @@ class ReviewFilterScreen extends StatefulWidget {
   final String imagePath;
 
   const ReviewFilterScreen({
-    Key? key,
+    super.key,
     required this.imagePath,
-  }) : super(key: key);
+  });
 
   @override
   State<ReviewFilterScreen> createState() => _ReviewFilterScreenState();
@@ -26,8 +26,6 @@ class ReviewFilterScreen extends StatefulWidget {
 class _ReviewFilterScreenState extends State<ReviewFilterScreen> {
   late FilterType _selectedFilter;
   bool _showCropMode = false;
-  Offset _topLeftCrop = const Offset(0, 0);
-  Offset _bottomRightCrop = const Offset(1, 1);
 
   @override
   void initState() {

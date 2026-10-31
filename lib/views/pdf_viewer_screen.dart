@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:printing/printing.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import '../services/pdf_service.dart';
 import '../services/file_management_service.dart';
@@ -16,11 +15,11 @@ class PDFViewerScreen extends StatefulWidget {
   final int pageCount;
 
   const PDFViewerScreen({
-    Key? key,
+    super.key,
     required this.pdfFile,
     required this.title,
     required this.pageCount,
-  }) : super(key: key);
+  });
 
   @override
   State<PDFViewerScreen> createState() => _PDFViewerScreenState();
@@ -55,8 +54,9 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024)
+    if (bytes < 1024 * 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -64,17 +64,12 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final screenWidth = media.size.width;
-    final screenHeight = media.size.height;
     final padding = screenWidth * 0.045;
     final borderRadius = screenWidth * 0.045;
     final iconSize = screenWidth * 0.07;
-    final buttonFontSize = screenWidth * 0.045;
     final infoFontSize = screenWidth * 0.04;
     final infoTitleFontSize = screenWidth * 0.045;
     final infoSubtitleFontSize = screenWidth * 0.035;
-    final actionButtonHeight = screenHeight * 0.07;
-    final actionButtonFont = screenWidth * 0.04;
-    final actionButtonIcon = screenWidth * 0.06;
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -159,7 +154,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                   borderRadius: BorderRadius.circular(borderRadius * 1.2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -173,7 +168,9 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                         gradient: LinearGradient(
                           colors: [
                             Theme.of(context).primaryColor,
-                            Theme.of(context).primaryColor.withOpacity(0.8),
+                            Theme.of(context)
+                                .primaryColor
+                                .withValues(alpha: 0.8),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(borderRadius),
@@ -212,10 +209,10 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                       padding: EdgeInsets.symmetric(
                           horizontal: padding * 0.7, vertical: padding * 0.4),
                       decoration: BoxDecoration(
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(borderRadius),
                         border: Border.all(
-                          color: Colors.green.withOpacity(0.3),
+                          color: Colors.green.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -255,7 +252,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -273,7 +270,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
           // Loading overlay
           if (_isLoading || _isSaving)
             Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               child: Center(
                 child: Container(
                   padding: const EdgeInsets.all(24),
@@ -282,7 +279,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -329,7 +326,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -355,7 +352,8 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    color:
+                        Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -379,7 +377,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -398,53 +396,6 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-    required Color color,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(25),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  color: color,
-                  size: 18,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -506,10 +457,12 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
 
   Future<void> _sharePDF() async {
     try {
-      await Share.shareXFiles(
-        [XFile(widget.pdfFile.path)],
-        text: 'PDF created with Document Scanner',
-        subject: widget.title,
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(widget.pdfFile.path)],
+          text: 'PDF created with SleekScan',
+          subject: widget.title,
+        ),
       );
     } catch (e) {
       _showErrorSnackBar('Error sharing PDF: $e');
@@ -614,22 +567,6 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Future<void> _showPostDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('File Saved'),
-        content: const Text('Your file has been saved successfully!'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }

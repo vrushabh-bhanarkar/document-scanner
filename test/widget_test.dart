@@ -5,7 +5,6 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:docscanner/main.dart';
@@ -18,6 +17,6 @@ void main() {
     await tester.pumpWidget(DocumentScannerApp(subscriptionProvider: sub));
 
     // Verify that our app loads with the splash screen
-    expect(find.text('Document Scanner'), findsOneWidget);
+    expect(find.text('SleekScan'), findsOneWidget);
   });
 }

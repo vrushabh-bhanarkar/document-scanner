@@ -12,11 +12,11 @@ class ScanPreviewScreen extends StatefulWidget {
   final List<Offset>? detectedCorners;
 
   const ScanPreviewScreen({
-    Key? key,
+    super.key,
     required this.imagePath,
     required this.scanMode,
     this.detectedCorners,
-  }) : super(key: key);
+  });
 
   @override
   State<ScanPreviewScreen> createState() => _ScanPreviewScreenState();
@@ -25,7 +25,6 @@ class ScanPreviewScreen extends StatefulWidget {
 class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
   File? _processedImage;
   bool _isProcessing = false;
-  bool _isEnhanced = false;
   String _selectedFilter = 'Original';
 
   final List<Map<String, dynamic>> _filters = [
@@ -219,7 +218,7 @@ class _ScanPreviewScreenState extends State<ScanPreviewScreen> {
                         ),
                         if (_isProcessing)
                           Container(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             child: const Center(
                               child: CircularProgressIndicator(
                                 color: Colors.white,

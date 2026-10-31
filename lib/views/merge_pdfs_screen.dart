@@ -8,7 +8,7 @@ import '../widgets/native_ad_widget.dart';
 import '../widgets/interstitial_ad_helper.dart';
 
 class MergePdfsScreen extends StatefulWidget {
-  const MergePdfsScreen({Key? key}) : super(key: key);
+  const MergePdfsScreen({super.key});
 
   @override
   State<MergePdfsScreen> createState() => _MergePdfsScreenState();
@@ -87,7 +87,7 @@ class _MergePdfsScreenState extends State<MergePdfsScreen> {
                         'Combine multiple PDFs into one document',
                         style: TextStyle(
                           fontSize: 14.sp,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                         ),
                       ),
                     ],
@@ -210,7 +210,7 @@ class _MergePdfsScreenState extends State<MergePdfsScreen> {
             borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 spreadRadius: 1,
                 blurRadius: 4,
                 offset: const Offset(0, 2),

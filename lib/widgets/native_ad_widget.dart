@@ -3,7 +3,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad_config.dart';
 
 class NativeAdWidget extends StatefulWidget {
-  const NativeAdWidget({Key? key}) : super(key: key);
+  const NativeAdWidget({super.key});
 
   @override
   State<NativeAdWidget> createState() => _NativeAdWidgetState();
@@ -55,7 +55,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
     if (_hasError) {
       return Container(
         height: 100,
-        color: Colors.red.withOpacity(0.2),
+        color: Colors.red.withValues(alpha: 0.2),
         alignment: Alignment.center,
         child: const Text('Native ad failed to load',
             style: TextStyle(color: Colors.red)),

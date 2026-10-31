@@ -8,7 +8,7 @@ import '../widgets/app_buttons.dart';
 import '../widgets/native_ad_widget.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -58,13 +58,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primaryBlue.withOpacity(0.15),
-                      AppColors.primaryBlue.withOpacity(0.05),
+                      AppColors.primaryBlue.withValues(alpha: 0.15),
+                      AppColors.primaryBlue.withValues(alpha: 0.05),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(10.r),
                   border: Border.all(
-                    color: AppColors.primaryBlue.withOpacity(0.2),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -90,13 +90,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               // Enhanced Search Bar
               Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                 child: Container(
                   decoration: BoxDecoration(
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryBlue.withOpacity(0.15),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.15),
                         blurRadius: 20.r,
                         offset: Offset(0, 8.h),
                         spreadRadius: -4.r,
@@ -126,13 +125,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           horizontal: 18.w, vertical: 14.h),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16.r),
-                        borderSide:
-                            const BorderSide(color: AppColors.gray200, width: 1.5),
+                        borderSide: const BorderSide(
+                            color: AppColors.gray200, width: 1.5),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16.r),
-                        borderSide:
-                            const BorderSide(color: AppColors.gray200, width: 1.5),
+                        borderSide: const BorderSide(
+                            color: AppColors.gray200, width: 1.5),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16.r),
@@ -192,7 +191,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.3),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.3),
                   blurRadius: 30.r,
                   offset: Offset(0, 12.h),
                   spreadRadius: -8.r,
@@ -249,13 +248,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         border: Border.all(color: AppColors.gray200, width: 1.3),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12.r,
             offset: Offset(0, 4.h),
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: AppColors.primaryBlue.withOpacity(0.08),
+            color: AppColors.primaryBlue.withValues(alpha: 0.08),
             blurRadius: 8.r,
             offset: Offset(0, 2.h),
             spreadRadius: -2.r,
@@ -273,8 +272,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _showDocumentMenu(context, document);
           },
           borderRadius: BorderRadius.circular(18.r),
-          splashColor: AppColors.primaryBlue.withOpacity(0.1),
-          highlightColor: AppColors.primaryBlue.withOpacity(0.05),
+          splashColor: AppColors.primaryBlue.withValues(alpha: 0.1),
+          highlightColor: AppColors.primaryBlue.withValues(alpha: 0.05),
           child: Padding(
             padding: EdgeInsets.all(16.w),
             child: Row(
@@ -285,18 +284,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primaryBlue.withOpacity(0.15),
-                        AppColors.primaryBlue.withOpacity(0.08),
+                        AppColors.primaryBlue.withValues(alpha: 0.15),
+                        AppColors.primaryBlue.withValues(alpha: 0.08),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(14.r),
                     border: Border.all(
-                      color: AppColors.primaryBlue.withOpacity(0.2),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.2),
                       width: 1.2,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryBlue.withOpacity(0.12),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.12),
                         blurRadius: 8.r,
                         offset: Offset(0, 3.h),
                       ),
@@ -367,10 +366,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Container(
                   padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.1),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10.r),
                     border: Border.all(
-                      color: AppColors.primaryBlue.withOpacity(0.2),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),

@@ -9,7 +9,7 @@ import '../widgets/native_ad_widget.dart';
 class AddPagesScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const AddPagesScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const AddPagesScreen({super.key, this.initialPdfFile});
 
   @override
   State<AddPagesScreen> createState() => _AddPagesScreenState();
@@ -84,7 +84,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.teal.withOpacity(0.1),
+                color: Colors.teal.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -153,7 +153,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -203,7 +203,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -260,7 +260,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
                 borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     spreadRadius: 1,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
@@ -362,7 +362,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
                 borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     spreadRadius: 1,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
@@ -414,7 +414,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
                         },
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -432,7 +432,7 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
                 borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     spreadRadius: 1,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
@@ -532,9 +532,9 @@ class _AddPagesScreenState extends State<AddPagesScreen> {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [

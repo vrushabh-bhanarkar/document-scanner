@@ -1,20 +1,15 @@
 import 'dart:io';
-import 'package:docscanner/widgets/banner_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:reorderables/reorderables.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:provider/provider.dart';
-import '../providers/subscription_provider.dart';
 import '../services/pdf_service.dart';
 import '../services/file_management_service.dart';
 import '../services/camera_service.dart';
-import '../providers/document_provider.dart';
 import '../core/themes.dart';
 import 'image_editor_screen.dart';
 
@@ -24,12 +19,11 @@ import 'pdf_viewer_screen.dart';
 import 'pdf_settings_screen.dart';
 import '../services/notification_service.dart';
 import '../widgets/interstitial_ad_helper.dart';
-import 'package:flutter/foundation.dart';
 
 class CreatePDFScreen extends StatefulWidget {
   final File? editedImage;
 
-  const CreatePDFScreen({Key? key, this.editedImage}) : super(key: key);
+  const CreatePDFScreen({super.key, this.editedImage});
 
   @override
   State<CreatePDFScreen> createState() => _CreatePDFScreenState();
@@ -57,11 +51,10 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
   String _pdfTitle = 'My PDF';
   PageSize _selectedPageSize = PageSize.a4;
   bool _fitToPage = true;
-  double _margin = 16;
-  bool _addPageNumbers = false;
-  String _watermarkText = '';
-  CameraFramePreset _cameraFrame = CameraFramePreset.a4Portrait;
-  Map<String, dynamic>? _topNotification;
+  final double _margin = 16;
+  final bool _addPageNumbers = false;
+  final String _watermarkText = '';
+  final CameraFramePreset _cameraFrame = CameraFramePreset.a4Portrait;
 
   // Track aspect ratio for each image (image path -> aspect ratio)
   final Map<String, double> _imageAspectRatios = {};
@@ -79,7 +72,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
     }
 
     _initializeCamera();
-    
+
     // Preload interstitial ad in background to avoid lag during PDF generation
     Future.delayed(const Duration(milliseconds: 500), () {
       InterstitialAdHelper.preloadAd();
@@ -176,7 +169,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
       await _cameraService.initialize(
         availableCameras.first,
         // Use medium resolution by default for faster initialization and capture
-        resolution: _isHDMode ? ResolutionPreset.ultraHigh : ResolutionPreset.high,
+        resolution:
+            _isHDMode ? ResolutionPreset.ultraHigh : ResolutionPreset.high,
       );
 
       // Ensure flash starts off by default until the user enables it
@@ -354,9 +348,6 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                 ? LayoutBuilder(
                     builder: (context, constraints) {
                       try {
-                        final cameraAspect =
-                            _cameraService.controller!.value.aspectRatio;
-
                         if (_cameraFrame == CameraFramePreset.device) {
                           // Fill the available space using the device ratio to avoid letterboxing
                           return Positioned.fill(
@@ -428,13 +419,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Colors.white.withOpacity(0.2),
-                                    Colors.white.withOpacity(0.1),
+                                    Colors.white.withValues(alpha: 0.2),
+                                    Colors.white.withValues(alpha: 0.1),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(25),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: Colors.white.withValues(alpha: 0.3),
                                   width: 1,
                                 ),
                               ),
@@ -496,8 +487,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.8),
-                    Colors.black.withOpacity(0.4),
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.black.withValues(alpha: 0.4),
                     Colors.transparent,
                   ],
                   stops: const [0.0, 0.7, 1.0],
@@ -508,10 +499,10 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   // Back button with improved design
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -537,10 +528,10 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   // HD/Normal toggle with improved design
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(25),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -557,7 +548,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                   horizontal: 16, vertical: 10),
                               decoration: BoxDecoration(
                                 color: !_isHDMode
-                                    ? Colors.white.withOpacity(0.9)
+                                    ? Colors.white.withValues(alpha: 0.9)
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -583,7 +574,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                   horizontal: 16, vertical: 10),
                               decoration: BoxDecoration(
                                 color: _isHDMode
-                                    ? Colors.white.withOpacity(0.9)
+                                    ? Colors.white.withValues(alpha: 0.9)
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -625,9 +616,9 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.black.withOpacity(0.95),
-                    Colors.black.withOpacity(0.8),
-                    Colors.black.withOpacity(0.4),
+                    Colors.black.withValues(alpha: 0.95),
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.black.withValues(alpha: 0.4),
                     Colors.transparent,
                   ],
                   stops: const [0.0, 0.3, 0.7, 1.0],
@@ -661,12 +652,14 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                       borderRadius:
                                           BorderRadius.circular(12 * scale),
                                       border: Border.all(
-                                        color: Colors.white.withOpacity(0.3),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.3),
                                         width: 2 * scale,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.3),
+                                          color: Colors.black
+                                              .withValues(alpha: 0.3),
                                           blurRadius: 8 * scale,
                                           offset: Offset(0, 4 * scale),
                                         ),
@@ -691,7 +684,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                                   EdgeInsets.all(4 * scale),
                                               decoration: BoxDecoration(
                                                 color: Colors.black
-                                                    .withOpacity(0.7),
+                                                    .withValues(alpha: 0.7),
                                                 borderRadius:
                                                     BorderRadius.circular(
                                                         6 * scale),
@@ -716,11 +709,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                         horizontal: 6 * scale,
                                         vertical: 3 * scale),
                                     decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.8),
+                                      color:
+                                          Colors.black.withValues(alpha: 0.8),
                                       borderRadius:
                                           BorderRadius.circular(8 * scale),
                                       border: Border.all(
-                                        color: Colors.white.withOpacity(0.3),
+                                        color:
+                                            Colors.white.withValues(alpha: 0.3),
                                         width: 1 * scale,
                                       ),
                                     ),
@@ -760,8 +755,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.3),
+                                            color: Colors.black
+                                                .withValues(alpha: 0.3),
                                             blurRadius: 4 * scale,
                                             offset: Offset(0, 2 * scale),
                                           ),
@@ -844,12 +839,12 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.4),
+                                  color: Colors.black.withValues(alpha: 0.4),
                                   blurRadius: 15 * scale,
                                   offset: Offset(0, 6 * scale),
                                 ),
                                 BoxShadow(
-                                  color: Colors.white.withOpacity(0.2),
+                                  color: Colors.white.withValues(alpha: 0.2),
                                   blurRadius: 8 * scale,
                                   offset: Offset(0, -2 * scale),
                                 ),
@@ -918,15 +913,15 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
           if (_isLoading)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -951,7 +946,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                         Text(
                           'Please wait while we create your document',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.7),
+                            color: Colors.white.withValues(alpha: 0.7),
                             fontSize: 14,
                           ),
                           textAlign: TextAlign.center,
@@ -987,23 +982,23 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  color.withOpacity(0.25),
-                  color.withOpacity(0.15),
+                  color.withValues(alpha: 0.25),
+                  color.withValues(alpha: 0.15),
                 ],
               ),
               borderRadius: BorderRadius.circular(16 * scale),
               border: Border.all(
-                color: color.withOpacity(0.4),
+                color: color.withValues(alpha: 0.4),
                 width: 1.5 * scale,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.2),
+                  color: color.withValues(alpha: 0.2),
                   blurRadius: 8 * scale,
                   offset: Offset(0, 4 * scale),
                 ),
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   blurRadius: 4 * scale,
                   offset: Offset(0, -2 * scale),
                 ),
@@ -1043,7 +1038,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).primaryColor,
-                    Theme.of(context).primaryColor.withOpacity(0.8),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(8 * scale),
@@ -1079,13 +1074,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).primaryColor,
-                  Theme.of(context).primaryColor.withOpacity(0.8),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: BorderRadius.circular(25 * scale),
               boxShadow: [
                 BoxShadow(
-                  color: Theme.of(context).primaryColor.withOpacity(0.3),
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                   blurRadius: 8 * scale,
                   offset: Offset(0, 4 * scale),
                 ),
@@ -1146,18 +1141,18 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   borderRadius: BorderRadius.circular(20 * scale),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 25 * scale,
                       offset: Offset(0, 8 * scale),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10 * scale,
                       offset: Offset(0, 2 * scale),
                     ),
                   ],
                   border: Border.all(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     width: 1 * scale,
                   ),
                 ),
@@ -1171,7 +1166,9 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                           gradient: LinearGradient(
                             colors: [
                               Theme.of(context).primaryColor,
-                              Theme.of(context).primaryColor.withOpacity(0.8),
+                              Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.8),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(25 * scale),
@@ -1179,7 +1176,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                             BoxShadow(
                               color: Theme.of(context)
                                   .primaryColor
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                               blurRadius: 10 * scale,
                               offset: Offset(0, 4 * scale),
                             ),
@@ -1190,7 +1187,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                             Container(
                               padding: EdgeInsets.all(4 * scale),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(6 * scale),
                               ),
                               child: Icon(
@@ -1222,13 +1219,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.green.withOpacity(0.1),
-                            Colors.green.withOpacity(0.05),
+                            Colors.green.withValues(alpha: 0.1),
+                            Colors.green.withValues(alpha: 0.05),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(25 * scale),
                         border: Border.all(
-                          color: Colors.green.withOpacity(0.3),
+                          color: Colors.green.withValues(alpha: 0.3),
                           width: 1 * scale,
                         ),
                       ),
@@ -1290,7 +1287,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                           ),
                           borderRadius: BorderRadius.circular(16 * scale),
                           border: Border.all(
-                            color: Colors.grey.withOpacity(0.1),
+                            color: Colors.grey.withValues(alpha: 0.1),
                             width: 1 * scale,
                           ),
                         ),
@@ -1303,10 +1300,10 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                   colors: [
                                     Theme.of(context)
                                         .primaryColor
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     Theme.of(context)
                                         .primaryColor
-                                        .withOpacity(0.05),
+                                        .withValues(alpha: 0.05),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(8 * scale),
@@ -1336,17 +1333,17 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                   colors: [
                                     Theme.of(context)
                                         .primaryColor
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     Theme.of(context)
                                         .primaryColor
-                                        .withOpacity(0.05),
+                                        .withValues(alpha: 0.05),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(20 * scale),
                                 border: Border.all(
                                   color: Theme.of(context)
                                       .primaryColor
-                                      .withOpacity(0.3),
+                                      .withValues(alpha: 0.3),
                                   width: 1 * scale,
                                 ),
                               ),
@@ -1420,18 +1417,18 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   borderRadius: BorderRadius.circular(20 * scale),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withValues(alpha: 0.08),
                       blurRadius: 25 * scale,
                       offset: Offset(0, -8 * scale),
                     ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10 * scale,
                       offset: Offset(0, -2 * scale),
                     ),
                   ],
                   border: Border.all(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     width: 1 * scale,
                   ),
                 ),
@@ -1448,10 +1445,10 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                 colors: [
                                   Theme.of(context)
                                       .primaryColor
-                                      .withOpacity(0.1),
+                                      .withValues(alpha: 0.1),
                                   Theme.of(context)
                                       .primaryColor
-                                      .withOpacity(0.05),
+                                      .withValues(alpha: 0.05),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(8 * scale),
@@ -1499,7 +1496,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                             decoration: BoxDecoration(
                               color: Theme.of(context)
                                   .primaryColor
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8 * scale),
                             ),
                             child: Icon(
@@ -1511,13 +1508,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16 * scale),
                             borderSide: BorderSide(
-                              color: Colors.grey.withOpacity(0.3),
+                              color: Colors.grey.withValues(alpha: 0.3),
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16 * scale),
                             borderSide: BorderSide(
-                              color: Colors.grey.withOpacity(0.3),
+                              color: Colors.grey.withValues(alpha: 0.3),
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
@@ -1548,7 +1545,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 DropdownButtonFormField<PageSize>(
-                                  value: _selectedPageSize,
+                                  initialValue: _selectedPageSize,
                                   style: TextStyle(
                                     color: Color(0xFF1E293B),
                                     fontSize: 14 * scale,
@@ -1567,7 +1564,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                       decoration: BoxDecoration(
                                         color: Theme.of(context)
                                             .primaryColor
-                                            .withOpacity(0.1),
+                                            .withValues(alpha: 0.1),
                                         borderRadius:
                                             BorderRadius.circular(8 * scale),
                                       ),
@@ -1581,14 +1578,16 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                       borderRadius:
                                           BorderRadius.circular(16 * scale),
                                       borderSide: BorderSide(
-                                        color: Colors.grey.withOpacity(0.3),
+                                        color:
+                                            Colors.grey.withValues(alpha: 0.3),
                                       ),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius:
                                           BorderRadius.circular(16 * scale),
                                       borderSide: BorderSide(
-                                        color: Colors.grey.withOpacity(0.3),
+                                        color:
+                                            Colors.grey.withValues(alpha: 0.3),
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
@@ -1634,7 +1633,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                     borderRadius:
                                         BorderRadius.circular(16 * scale),
                                     border: Border.all(
-                                      color: Colors.grey.withOpacity(0.3),
+                                      color: Colors.grey.withValues(alpha: 0.3),
                                     ),
                                   ),
                                   child: SwitchListTile(
@@ -1653,7 +1652,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                       });
                                     },
                                     contentPadding: EdgeInsets.zero,
-                                    activeColor: Theme.of(context).primaryColor,
+                                    activeThumbColor:
+                                        Theme.of(context).primaryColor,
                                   ),
                                 ),
                               ],
@@ -1665,7 +1665,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                 Flexible(
                                   flex: 2,
                                   child: DropdownButtonFormField<PageSize>(
-                                    value: _selectedPageSize,
+                                    initialValue: _selectedPageSize,
                                     style: TextStyle(
                                       color: Color(0xFF1E293B),
                                       fontSize: 14 * scale,
@@ -1684,7 +1684,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                         decoration: BoxDecoration(
                                           color: Theme.of(context)
                                               .primaryColor
-                                              .withOpacity(0.1),
+                                              .withValues(alpha: 0.1),
                                           borderRadius:
                                               BorderRadius.circular(8 * scale),
                                         ),
@@ -1698,14 +1698,16 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                         borderRadius:
                                             BorderRadius.circular(16 * scale),
                                         borderSide: BorderSide(
-                                          color: Colors.grey.withOpacity(0.3),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.3),
                                         ),
                                       ),
                                       enabledBorder: OutlineInputBorder(
                                         borderRadius:
                                             BorderRadius.circular(16 * scale),
                                         borderSide: BorderSide(
-                                          color: Colors.grey.withOpacity(0.3),
+                                          color: Colors.grey
+                                              .withValues(alpha: 0.3),
                                         ),
                                       ),
                                       focusedBorder: OutlineInputBorder(
@@ -1754,7 +1756,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                       borderRadius:
                                           BorderRadius.circular(16 * scale),
                                       border: Border.all(
-                                        color: Colors.grey.withOpacity(0.3),
+                                        color:
+                                            Colors.grey.withValues(alpha: 0.3),
                                       ),
                                     ),
                                     child: SwitchListTile(
@@ -1773,7 +1776,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                                         });
                                       },
                                       contentPadding: EdgeInsets.zero,
-                                      activeColor:
+                                      activeThumbColor:
                                           Theme.of(context).primaryColor,
                                     ),
                                   ),
@@ -1793,7 +1796,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
           // Enhanced Loading overlay
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.6),
+              color: Colors.black.withValues(alpha: 0.6),
               child: Center(
                 child: Container(
                   padding: const EdgeInsets.all(32),
@@ -1802,7 +1805,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 30,
                         offset: const Offset(0, 15),
                       ),
@@ -1817,7 +1820,9 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                           gradient: LinearGradient(
                             colors: [
                               Theme.of(context).primaryColor,
-                              Theme.of(context).primaryColor.withOpacity(0.8),
+                              Theme.of(context)
+                                  .primaryColor
+                                  .withValues(alpha: 0.8),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(50),
@@ -1865,12 +1870,12 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -1883,7 +1888,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Colors.grey.withOpacity(0.2),
+                color: Colors.grey.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -1907,18 +1912,18 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.8),
-                    Colors.black.withOpacity(0.6),
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.black.withValues(alpha: 0.6),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -1946,18 +1951,18 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.white.withOpacity(0.95),
-                        Colors.white.withOpacity(0.85),
+                        Colors.white.withValues(alpha: 0.95),
+                        Colors.white.withValues(alpha: 0.85),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -1996,7 +2001,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.red.withOpacity(0.3),
+                        color: Colors.red.withValues(alpha: 0.3),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
@@ -2079,13 +2084,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-                  Theme.of(context).primaryColor.withOpacity(0.05),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -2143,602 +2148,607 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.3),
+                        color: Colors.green.withValues(alpha: 0.3),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
                     ],
                   ),
-                child: Stack(
-                  children: [
-                    // Decorative circles
-                    Positioned(
-                      right: -20,
-                      top: -20,
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: -30,
-                      bottom: -30,
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
-                        ),
-                      ),
-                    ),
-                    // Content
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade600,
-                              size: 32,
-                            ),
+                  child: Stack(
+                    children: [
+                      // Decorative circles
+                      Positioned(
+                        right: -20,
+                        top: -20,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'PDF Created Successfully!',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'} \u2022 ${_selectedPageSize.name.toUpperCase()}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        ),
+                      ),
+                      Positioned(
+                        left: -30,
+                        bottom: -30,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Enhanced PDF Info Card with Image Thumbnails & Modern Design
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
-                      spreadRadius: -5,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // PDF Header with Title
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFFF8FAFC),
-                            Colors.grey.shade50,
-                          ],
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Theme.of(context).primaryColor,
-                                  Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.8),
+                      // Content
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(50),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                              child: Icon(
+                                Icons.check_circle,
+                                color: Colors.green.shade600,
+                                size: 32,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.picture_as_pdf_rounded,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _pdfTitle,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 18,
-                                    color: Color(0xFF1E293B),
-                                    letterSpacing: -0.5,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Theme.of(context)
-                                          .primaryColor
-                                          .withOpacity(0.2),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'PDF Document',
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'PDF Created Successfully!',
                                     style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: -0.5,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Thumbnail Preview Section
-                    if (_selectedImages.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    Icons.photo_library_rounded,
-                                    size: 18,
-                                    color: Colors.blue.shade700,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Page Preview',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey.shade800,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.1),
-                                        Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.05),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: TextButton.icon(
-                                    onPressed: _viewPDF,
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    icon: Icon(
-                                      Icons.fullscreen_rounded,
-                                      size: 16,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    label: Text(
-                                      'View Full',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'} \u2022 ${_selectedPageSize.name.toUpperCase()}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.9),
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              height: 110,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _selectedImages.length > 5
-                                    ? 5
-                                    : _selectedImages.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(right: 12),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: 80,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                            border: Border.all(
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.3),
-                                              width: 2.5,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.15),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            child: Image.file(
-                                              _selectedImages[index],
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          bottom: 6,
-                                          left: 6,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.black.withOpacity(0.8),
-                                                  Colors.black.withOpacity(0.6),
-                                                ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: Colors.white
-                                                    .withOpacity(0.3),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              '${index + 1}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                ],
                               ),
                             ),
-                            if (_selectedImages.length > 5)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      size: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '+${_selectedImages.length - 5} more page${_selectedImages.length - 5 == 1 ? '' : 's'}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                           ],
                         ),
-                      ),
-
-                    // Divider
-                    Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.grey.shade200,
-                    ),
-
-                    // File Details with Icons
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          _buildDetailRow(
-                            Icons.description_rounded,
-                            'Total Pages',
-                            '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'}',
-                          ),
-                          const SizedBox(height: 14),
-                          _buildDetailRow(
-                            Icons.crop_square_rounded,
-                            'Page Size',
-                            _selectedPageSize.name.toUpperCase(),
-                          ),
-                          const SizedBox(height: 14),
-                          FutureBuilder<String>(
-                            future: _getPDFFileSize(),
-                            builder: (context, snapshot) {
-                              return _buildDetailRow(
-                                Icons.storage_rounded,
-                                'File Size',
-                                snapshot.data ?? 'Calculating...',
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              SizedBox(height: 24.h),
-
-              // Flexible spacing - only takes available space
-              // Expanded(
-              //   child: Column(
-              //     children: [
-              //       const Spacer(),
-              //       // Native Ad
-              //       const Padding(
-              //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              //         child: BannerAdWidget(),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // Compact Action Buttons
-              SafeArea(
-                child: Container(
-                  margin: EdgeInsets.all(16 * scale),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Primary Action - Save & Share
-                      // Container(
-                      //   width: double.infinity,
-                      //   decoration: BoxDecoration(
-                      //     gradient: LinearGradient(
-                      //       colors: [
-                      //         Theme.of(context).primaryColor,
-                      //         Theme.of(context).primaryColor.withOpacity(0.8),
-                      //       ],
-                      //     ),
-                      //     borderRadius: BorderRadius.circular(25 * scale),
-                      //     boxShadow: [
-                      //       BoxShadow(
-                      //         color: Theme.of(context)
-                      //             .primaryColor
-                      //             .withOpacity(0.3),
-                      //         blurRadius: 12 * scale,
-                      //         offset: Offset(0, 6 * scale),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   child: Material(
-                      //     color: Colors.transparent,
-                      //     child: InkWell(
-                      //       onTap: _saveAndSharePDF,
-                      //       borderRadius: BorderRadius.circular(25 * scale),
-                      //       child: Container(
-                      //         padding:
-                      //             EdgeInsets.symmetric(vertical: 16 * scale),
-                      //         child: Row(
-                      //           mainAxisAlignment: MainAxisAlignment.center,
-                      //           children: [
-                      //             Icon(
-                      //               Icons.save_alt,
-                      //               color: Colors.white,
-                      //               size: 22 * scale,
-                      //             ),
-                      //             SizedBox(width: 10 * scale),
-                      //             Text(
-                      //               'Save & Share PDF',
-                      //               style: TextStyle(
-                      //                 color: Colors.white,
-                      //                 fontWeight: FontWeight.w700,
-                      //                 fontSize: 16 * scale,
-                      //               ),
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ),
-                      // ),
-                      // SizedBox(height: 12 * scale),
-                      // Secondary Actions Row
-                      Row(
-                        children: [
-                          Flexible(
-                            child: _buildSecondaryActionButton(
-                              icon: Icons.save,
-                              label: 'Save Only',
-                              onTap: _savePDFOnly,
-                              color: Colors.green,
-                              scale: scale,
-                            ),
-                          ),
-                          SizedBox(width: 12 * scale),
-                          Flexible(
-                            child: _buildSecondaryActionButton(
-                              icon: Icons.share,
-                              label: 'Share Only',
-                              onTap: _sharePDFOnly,
-                              color: Colors.blue,
-                              scale: scale,
-                            ),
-                          ),
-                          SizedBox(width: 12 * scale),
-                          Flexible(
-                            child: _buildSecondaryActionButton(
-                              icon: Icons.edit,
-                              label: 'Edit',
-                              onTap: () {
-                                setState(() {
-                                  _showPreview = false;
-                                  _previewPDF = null;
-                                });
-                              },
-                              color: Colors.orange,
-                              scale: scale,
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
                 ),
-              ),
 
-              // Loading overlay
-              if (_isLoading)
+                // Enhanced PDF Info Card with Image Thumbnails & Modern Design
                 Container(
-                  color: Colors.black.withOpacity(0.6),
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                        spreadRadius: -5,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).primaryColor,
-                            ),
-                            strokeWidth: 3,
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // PDF Header with Title
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              const Color(0xFFF8FAFC),
+                              Colors.grey.shade50,
+                            ],
                           ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Processing...',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF1E293B),
-                            ),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Please wait while we process your request',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 14,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context).primaryColor,
+                                    Theme.of(context)
+                                        .primaryColor
+                                        .withValues(alpha: 0.8),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.picture_as_pdf_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _pdfTitle,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 18,
+                                      color: Color(0xFF1E293B),
+                                      letterSpacing: -0.5,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withValues(alpha: 0.2),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'PDF Document',
+                                      style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+
+                      // Thumbnail Preview Section
+                      if (_selectedImages.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      Icons.photo_library_rounded,
+                                      size: 18,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Page Preview',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context)
+                                              .primaryColor
+                                              .withValues(alpha: 0.1),
+                                          Theme.of(context)
+                                              .primaryColor
+                                              .withValues(alpha: 0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextButton.icon(
+                                      onPressed: _viewPDF,
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      icon: Icon(
+                                        Icons.fullscreen_rounded,
+                                        size: 16,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      label: Text(
+                                        'View Full',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                height: 110,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _selectedImages.length > 5
+                                      ? 5
+                                      : _selectedImages.length,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      margin: const EdgeInsets.only(right: 12),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            width: 80,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              border: Border.all(
+                                                color: Theme.of(context)
+                                                    .primaryColor
+                                                    .withValues(alpha: 0.3),
+                                                width: 2.5,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.15),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              child: Image.file(
+                                                _selectedImages[index],
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 6,
+                                            left: 6,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.black
+                                                        .withValues(alpha: 0.8),
+                                                    Colors.black
+                                                        .withValues(alpha: 0.6),
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                '${index + 1}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              if (_selectedImages.length > 5)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        size: 14,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '+${_selectedImages.length - 5} more page${_selectedImages.length - 5 == 1 ? '' : 's'}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                      // Divider
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey.shade200,
+                      ),
+
+                      // File Details with Icons
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            _buildDetailRow(
+                              Icons.description_rounded,
+                              'Total Pages',
+                              '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'}',
+                            ),
+                            const SizedBox(height: 14),
+                            _buildDetailRow(
+                              Icons.crop_square_rounded,
+                              'Page Size',
+                              _selectedPageSize.name.toUpperCase(),
+                            ),
+                            const SizedBox(height: 14),
+                            FutureBuilder<String>(
+                              future: _getPDFFileSize(),
+                              builder: (context, snapshot) {
+                                return _buildDetailRow(
+                                  Icons.storage_rounded,
+                                  'File Size',
+                                  snapshot.data ?? 'Calculating...',
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 24.h),
+
+                // Flexible spacing - only takes available space
+                // Expanded(
+                //   child: Column(
+                //     children: [
+                //       const Spacer(),
+                //       // Native Ad
+                //       const Padding(
+                //         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                //         child: BannerAdWidget(),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                // Compact Action Buttons
+                SafeArea(
+                  child: Container(
+                    margin: EdgeInsets.all(16 * scale),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Primary Action - Save & Share
+                        // Container(
+                        //   width: double.infinity,
+                        //   decoration: BoxDecoration(
+                        //     gradient: LinearGradient(
+                        //       colors: [
+                        //         Theme.of(context).primaryColor,
+                        //         Theme.of(context).primaryColor.withOpacity(0.8),
+                        //       ],
+                        //     ),
+                        //     borderRadius: BorderRadius.circular(25 * scale),
+                        //     boxShadow: [
+                        //       BoxShadow(
+                        //         color: Theme.of(context)
+                        //             .primaryColor
+                        //             .withOpacity(0.3),
+                        //         blurRadius: 12 * scale,
+                        //         offset: Offset(0, 6 * scale),
+                        //       ),
+                        //     ],
+                        //   ),
+                        //   child: Material(
+                        //     color: Colors.transparent,
+                        //     child: InkWell(
+                        //       onTap: _saveAndSharePDF,
+                        //       borderRadius: BorderRadius.circular(25 * scale),
+                        //       child: Container(
+                        //         padding:
+                        //             EdgeInsets.symmetric(vertical: 16 * scale),
+                        //         child: Row(
+                        //           mainAxisAlignment: MainAxisAlignment.center,
+                        //           children: [
+                        //             Icon(
+                        //               Icons.save_alt,
+                        //               color: Colors.white,
+                        //               size: 22 * scale,
+                        //             ),
+                        //             SizedBox(width: 10 * scale),
+                        //             Text(
+                        //               'Save & Share PDF',
+                        //               style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontWeight: FontWeight.w700,
+                        //                 fontSize: 16 * scale,
+                        //               ),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                        // SizedBox(height: 12 * scale),
+                        // Secondary Actions Row
+                        Row(
+                          children: [
+                            Flexible(
+                              child: _buildSecondaryActionButton(
+                                icon: Icons.save,
+                                label: 'Save Only',
+                                onTap: _savePDFOnly,
+                                color: Colors.green,
+                                scale: scale,
+                              ),
+                            ),
+                            SizedBox(width: 12 * scale),
+                            Flexible(
+                              child: _buildSecondaryActionButton(
+                                icon: Icons.share,
+                                label: 'Share Only',
+                                onTap: _sharePDFOnly,
+                                color: Colors.blue,
+                                scale: scale,
+                              ),
+                            ),
+                            SizedBox(width: 12 * scale),
+                            Flexible(
+                              child: _buildSecondaryActionButton(
+                                icon: Icons.edit,
+                                label: 'Edit',
+                                onTap: () {
+                                  setState(() {
+                                    _showPreview = false;
+                                    _previewPDF = null;
+                                  });
+                                },
+                                color: Colors.orange,
+                                scale: scale,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-            ],
+
+                // Loading overlay
+                if (_isLoading)
+                  Container(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).primaryColor,
+                              ),
+                              strokeWidth: 3,
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Processing...',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Please wait while we process your request',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
@@ -2752,7 +2762,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -2789,82 +2799,12 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
     );
   }
 
-  Widget _buildCompactDetailRow(String label, String value) {
-    return Row(
-      children: [
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade700,
-            fontSize: 14,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(
-              color: Color(0xFF1E293B),
-              fontSize: 14,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   void _showTopNotification(String message, {Color color = Colors.green}) {
-    setState(() {
-      _topNotification = {'message': message, 'color': color};
-    });
-
-    // Auto-dismiss after a short delay to keep UI clean
-    Future.delayed(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      if (_topNotification != null && _topNotification!['message'] == message) {
-        setState(() => _topNotification = null);
-      }
-    });
-  }
-
-  Widget _buildTopNotification({required double scale}) {
-    if (_topNotification == null) return const SizedBox.shrink();
-    final Color color = (_topNotification!['color'] as Color?) ?? Colors.blue;
-    final String message = (_topNotification!['message'] as String?) ?? '';
-
-    return Container(
-      width: double.infinity,
-      padding:
-          EdgeInsets.symmetric(vertical: 10 * scale, horizontal: 14 * scale),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.85),
-        borderRadius: BorderRadius.circular(12 * scale),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 8 * scale,
-            offset: Offset(0, 4 * scale),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.info_outline, color: Colors.white, size: 18 * scale),
-          SizedBox(width: 8 * scale),
-          Expanded(
-            child: Text(
-              message,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 14 * scale,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    if (color == Colors.red) {
+      _showErrorSnackBar(message);
+    } else {
+      _showSuccessSnackBar(message);
+    }
   }
 
   void _toggleFlash() async {
@@ -2979,14 +2919,14 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
           color: Colors.orange);
       return;
     }
-    
+
     // Set capturing state immediately for instant UI feedback
     if (mounted) {
       setState(() {
         _isCapturing = true;
       });
     }
-    
+
     try {
       print('CreatePDFScreen: Attempting to capture image...');
       // Use compute or background isolate for faster capture
@@ -3006,7 +2946,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             _isCapturing = false;
           });
         }
-        
+
         // Navigate to crop screen with the camera frame preset
         if (mounted) {
           final result = await Navigator.push(
@@ -3132,10 +3072,6 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
     }
   }
 
-  void _reorderImages() {
-    _toggleReorderMode();
-  }
-
   void _toggleReorderMode() {
     setState(() {
       _isReorderMode = !_isReorderMode;
@@ -3193,12 +3129,12 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 15,
             offset: const Offset(0, 6),
           ),
           BoxShadow(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, -2),
           ),
@@ -3211,7 +3147,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -3236,13 +3172,13 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).primaryColor,
-                    Theme.of(context).primaryColor.withOpacity(0.8),
+                    Theme.of(context).primaryColor.withValues(alpha: 0.8),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -3280,7 +3216,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -3373,40 +3309,6 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
     _showTopNotification('Page ${index + 1} removed', color: Colors.orange);
   }
 
-  void _showPDFSettings() {
-    // Open dedicated PDF settings screen so user can adjust page size,
-    // fit, margin, page numbers and watermark. Preserve camera state.
-    print('CreatePDFScreen: Opening PDF settings screen...');
-    // Keep camera alive; push settings screen and wait for result
-    Navigator.push<Map<String, dynamic>>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PdfSettingsScreen(
-          initialPageSize: _selectedPageSize,
-          initialFitToPage: _fitToPage,
-          initialMargin: _margin,
-          initialAddPageNumbers: _addPageNumbers,
-          initialWatermark: _watermarkText,
-          initialCameraFrame: _cameraFrame,
-        ),
-      ),
-    ).then((result) {
-      if (result != null) {
-        setState(() {
-          _selectedPageSize =
-              result['pageSize'] as PageSize? ?? _selectedPageSize;
-          _fitToPage = result['fitToPage'] as bool? ?? _fitToPage;
-          _margin = result['margin'] as double? ?? _margin;
-          _addPageNumbers =
-              result['addPageNumbers'] as bool? ?? _addPageNumbers;
-          _watermarkText = result['watermarkText'] as String? ?? _watermarkText;
-          _cameraFrame =
-              result['cameraFrame'] as CameraFramePreset? ?? _cameraFrame;
-        });
-      }
-    });
-  }
-
   // Method to handle returning to camera view
   void _returnToCamera() {
     print('CreatePDFScreen: Returning to camera view...');
@@ -3456,13 +3358,14 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
       File? pdfFile;
       try {
         final pdfService = PDFService();
-        
+
         // Use lower quality for faster generation with many images
         final imageQuality = _selectedImages.length > 10 ? 75 : 82;
         final maxDimension = _selectedImages.length > 10 ? 1800 : 2000;
-        
-        print('CreatePDFScreen: Using imageQuality=$imageQuality, maxDimension=$maxDimension');
-        
+
+        print(
+            'CreatePDFScreen: Using imageQuality=$imageQuality, maxDimension=$maxDimension');
+
         pdfFile = await pdfService.createAdvancedPDF(
           imageFiles: _selectedImages,
           title: _pdfTitle,
@@ -3491,7 +3394,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
       }
 
       stopwatch.stop();
-      print('CreatePDFScreen: PDF generation took ${stopwatch.elapsedMilliseconds}ms');
+      print(
+          'CreatePDFScreen: PDF generation took ${stopwatch.elapsedMilliseconds}ms');
 
       if (pdfFile != null) {
         if (!await pdfFile.exists()) {
@@ -3503,8 +3407,9 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
           throw Exception('Generated PDF file is empty');
         }
 
-        print('CreatePDFScreen: PDF generated successfully: \x1B[32m${pdfFile.path}\x1B[0m');
-        print('CreatePDFScreen: PDF file size: ${fileSize} bytes');
+        print(
+            'CreatePDFScreen: PDF generated successfully: \x1B[32m${pdfFile.path}\x1B[0m');
+        print('CreatePDFScreen: PDF file size: $fileSize bytes');
 
         if (mounted) {
           setState(() {
@@ -3531,7 +3436,8 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
       } else if (e.toString().contains('image')) {
         errorMessage = 'Image processing error. Please check your images.';
       } else {
-        errorMessage = 'Error creating PDF: ${e.toString().split(':').last.trim()}';
+        errorMessage =
+            'Error creating PDF: ${e.toString().split(':').last.trim()}';
       }
 
       if (mounted) {
@@ -3576,75 +3482,6 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
         print('CreatePDFScreen: Interstitial ad closed');
       },
     );
-  }
-
-  Future<void> _saveAndSharePDF() async {
-    if (_previewPDF == null) {
-      _showErrorSnackBar('No PDF to save and share');
-      return;
-    }
-
-    print('CreatePDFScreen: Starting PDF save and share...');
-    setState(() => _isLoading = true);
-
-    try {
-      // First, save to local storage
-      print('CreatePDFScreen: Saving PDF to local storage...');
-      final fileService = FileManagementService();
-      final savedDocument = await fileService.savePDFDocument(
-        name: _pdfTitle,
-        pdfPath: _previewPDF!.path,
-        imagePaths: _selectedImages.map((f) => f.path).toList(),
-      );
-
-      if (savedDocument != null) {
-        print('CreatePDFScreen: PDF saved successfully to local storage');
-        print('CreatePDFScreen: Document ID: ${savedDocument.id}');
-
-        // Show success message
-        _showSuccessSnackBar('PDF saved to Documents!');
-
-        // Small delay to show the success message
-        await Future.delayed(const Duration(milliseconds: 500));
-
-        // Then share the PDF
-        print('CreatePDFScreen: Sharing PDF...');
-        await Share.shareXFiles(
-          [XFile(_previewPDF!.path)],
-          text: 'PDF created with Document Scanner',
-          subject: _pdfTitle,
-        );
-
-        print('CreatePDFScreen: PDF shared successfully');
-
-        // Show final success message
-        _showSuccessSnackBar('PDF saved and shared successfully!');
-
-        // Navigate back to home after a delay
-        await Future.delayed(const Duration(milliseconds: 1000));
-
-        print('CreatePDFScreen: Disposing camera and navigating back...');
-        // Ensure camera is disposed before navigation
-        await _disposeCamera();
-
-        // Mark that camera reset is needed after PDF export
-        markCameraResetNeeded();
-
-        print('CreatePDFScreen: Navigating back to home...');
-        // Navigate back to home
-        if (mounted) {
-          Navigator.pop(context);
-        }
-      } else {
-        print('CreatePDFScreen: Failed to save PDF to local storage');
-        _showErrorSnackBar('Failed to save PDF to local storage');
-        setState(() => _isLoading = false);
-      }
-    } catch (e) {
-      print('CreatePDFScreen: Error in save and share: $e');
-      _showErrorSnackBar('Error saving PDF: $e');
-      setState(() => _isLoading = false);
-    }
   }
 
   // New method to save PDF without sharing
@@ -3720,7 +3557,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             Container(
               padding: EdgeInsets.all(6.w),
               decoration: BoxDecoration(
-                color: AppColors.errorLight.withOpacity(0.3),
+                color: AppColors.errorLight.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(
@@ -3762,7 +3599,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             Container(
               padding: EdgeInsets.all(6.w),
               decoration: BoxDecoration(
-                color: AppColors.successLight.withOpacity(0.3),
+                color: AppColors.successLight.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(
@@ -3942,7 +3779,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -3985,8 +3822,9 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
   String _formatFileSize(int bytes) {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024)
+    if (bytes < 1024 * 1024 * 1024) {
       return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    }
     return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -3999,40 +3837,6 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
     } catch (e) {
       return 'Unknown';
     }
-  }
-
-  // Helper method to sanitize filename
-  String _sanitizeFileName(String fileName) {
-    return fileName
-        .replaceAll(RegExp(r'[^\w\s-]'), '')
-        .replaceAll(RegExp(r'\s+'), '_');
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Text(
-            '$label: ',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade700,
-              fontSize: 14,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                color: Color(0xFF1E293B),
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   // Show more options menu
@@ -4094,6 +3898,12 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
               subtitle: 'Create QR code for sharing',
               onTap: _generateQRCode,
             ),
+            _buildOptionTile(
+              icon: Icons.print,
+              title: 'Print Document',
+              subtitle: 'Send to a printer',
+              onTap: _printPDF,
+            ),
             const SizedBox(height: 10),
           ],
         ),
@@ -4111,7 +3921,7 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.1),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
@@ -4149,10 +3959,10 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(25 * scale),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1 * scale,
         ),
       ),
@@ -4290,57 +4100,6 @@ class _CreatePDFScreenState extends State<CreatePDFScreen>
           title: _pdfTitle,
           pageCount: _selectedImages.length,
         ),
-      ),
-    );
-  }
-
-  Future<void> _showPostSaveOptions(BuildContext context, File file) async {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Wrap(
-          children: [
-            ListTile(
-              leading: const Icon(Icons.download),
-              title: const Text('Save to Downloads'),
-              onTap: () async {
-                Navigator.pop(ctx);
-                final fileService = FileManagementService();
-                final result = await fileService.saveToDownloads(file);
-                _showSuccessSnackBar(result
-                    ? 'Saved to Downloads!'
-                    : 'Failed to save to Downloads');
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text('View Recent Downloads'),
-              onTap: () {
-                Navigator.pop(ctx);
-                Navigator.pushNamed(context, '/recent_downloads');
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> _showPostSaveDialog(BuildContext context) async {
-    return showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('File Saved'),
-        content: const Text('Your file has been saved successfully!'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
-          ),
-        ],
       ),
     );
   }

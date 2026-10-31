@@ -121,6 +121,8 @@ dependencies:
   purchases_flutter: ^11.0.0
   firebase_storage: ^13.6.1
 
+  device_info_plus: any
+  purchases_ui_flutter: ^11.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

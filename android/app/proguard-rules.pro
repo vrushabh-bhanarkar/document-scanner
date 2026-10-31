@@ -61,4 +61,8 @@
 
 # Play Core Tasks
 -keep class com.google.android.play.core.tasks.** { *; }
--dontwarn com.google.android.play.core.tasks.** 
+-dontwarn com.google.android.play.core.tasks.**
+
+# RevenueCat
+-keep class com.revenuecat.purchases.** { *; }
+-dontwarn com.revenuecat.purchases.** 

@@ -5,8 +5,7 @@ import 'ad_config.dart';
 class BannerAdWidget extends StatefulWidget {
   final String? adUnitId;
   final AdSize adSize;
-  const BannerAdWidget({Key? key, this.adUnitId, this.adSize = AdSize.banner})
-      : super(key: key);
+  const BannerAdWidget({super.key, this.adUnitId, this.adSize = AdSize.banner});
 
   @override
   State<BannerAdWidget> createState() => _BannerAdWidgetState();
@@ -55,7 +54,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
     if (!_isBannerAdReady || _bannerAd == null) {
       return SizedBox(height: widget.adSize.height.toDouble());
     }
-    return Container(
+    return SizedBox(
       width: _bannerAd!.size.width.toDouble(),
       height: _bannerAd!.size.height.toDouble(),
       child: AdWidget(ad: _bannerAd!),

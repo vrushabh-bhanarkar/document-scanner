@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/image_enhancement_service.dart';
 import '../services/ocr_service.dart';
-import '../services/pdf_service.dart';
 import '../providers/document_provider.dart';
 import '../models/document_model.dart';
-import 'package:flutter/foundation.dart';
-import 'create_pdf_screen.dart';
 import 'dart:async';
 import '../services/notification_service.dart';
 
@@ -47,12 +44,12 @@ class ImageEditorScreen extends StatefulWidget {
   final double? initialAspectRatio;
 
   const ImageEditorScreen({
-    Key? key,
+    super.key,
     required this.imageFile,
     this.title,
     this.isFromCreatePdf = false,
     this.initialAspectRatio,
-  }) : super(key: key);
+  });
 
   @override
   State<ImageEditorScreen> createState() => _ImageEditorScreenState();
@@ -62,7 +59,6 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
     with TickerProviderStateMixin {
   late ImageEnhancementService _enhancementService;
   late OCRService _ocrService;
-  late PDFService _pdfService;
 
   File _currentImage;
   bool _isProcessing = false;
@@ -80,17 +76,11 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
   bool _flipHorizontal = false;
   bool _flipVertical = false;
 
-  // Filter preview cache
-  final Map<ImageFilter, Uint8List?> _filterPreviews = {};
-
   // Animation controllers
   late AnimationController _slideController;
   late AnimationController _fadeController;
-  late Animation<Offset> _slideAnimation;
-  late Animation<double> _fadeAnimation;
 
   // UI state
-  bool _showBeforeAfter = false;
   File? _originalImage;
   int _selectedTabIndex = 0;
 
@@ -112,7 +102,6 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
     _originalImage = widget.imageFile;
     _enhancementService = ImageEnhancementService();
     _ocrService = OCRService();
-    _pdfService = PDFService();
 
     // Initialize history with original state
     _addToHistory(_createImageState());
@@ -126,22 +115,6 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
 
     _slideController.forward();
     _fadeController.forward();
@@ -341,8 +314,8 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black.withOpacity(0.9),
-            Colors.black.withOpacity(0.6),
+            Colors.black.withValues(alpha: 0.9),
+            Colors.black.withValues(alpha: 0.6),
           ],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
@@ -420,7 +393,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -453,7 +426,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
             if (_isProcessing)
               Positioned.fill(
                 child: Container(
-                  color: Colors.black.withOpacity(0.7),
+                  color: Colors.black.withValues(alpha: 0.7),
                   child: Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -524,7 +497,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Colors.white.withOpacity(0.2)
+                      ? Colors.white.withValues(alpha: 0.2)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -630,8 +603,8 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
                 child: Container(
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? Colors.white.withOpacity(0.2)
-                        : Colors.white.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha: 0.2)
+                        : Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected ? Colors.white : Colors.transparent,
@@ -742,9 +715,9 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: Colors.white,
-            inactiveTrackColor: Colors.white.withOpacity(0.3),
+            inactiveTrackColor: Colors.white.withValues(alpha: 0.3),
             thumbColor: Colors.white,
-            overlayColor: Colors.white.withOpacity(0.2),
+            overlayColor: Colors.white.withValues(alpha: 0.2),
             trackHeight: 4,
           ),
           child: Slider(
@@ -823,7 +796,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -861,8 +834,8 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.white.withOpacity(0.2)
-              : Colors.white.withOpacity(0.1),
+              ? Colors.white.withValues(alpha: 0.2)
+              : Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isActive ? Colors.white : Colors.transparent,
@@ -894,7 +867,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
@@ -991,7 +964,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
           'Edited_${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}_${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
 
       // Create the document
-      final document = await documentProvider.createDocument(
+      await documentProvider.createDocument(
         name: documentName,
         imagePath: _currentImage.path,
         type: DocumentType.image,
@@ -1026,16 +999,7 @@ class _ImageEditorScreenState extends State<ImageEditorScreen>
           _isProcessing = false;
         });
 
-        if (document != null) {
-          Navigator.pop(context, _currentImage);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to save image'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+        Navigator.pop(context, _currentImage);
       }
     } catch (e) {
       if (mounted) {

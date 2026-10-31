@@ -6,12 +6,14 @@ import 'package:pdf/widgets.dart' as pw;
 
 /// 100% OFFLINE: Requires zero network calls or server infrastructure.
 class OfflineScannerService {
-  final TextRecognizer _textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+  final TextRecognizer _textRecognizer =
+      TextRecognizer(script: TextRecognitionScript.latin);
 
   /// Extract text on-device using Google ML Kit (Offline)
   Future<String> extractTextOffline(File imageFile) async {
     final inputImage = InputImage.fromFile(imageFile);
-    final RecognizedText recognizedText = await _textRecognizer.processImage(inputImage);
+    final RecognizedText recognizedText =
+        await _textRecognizer.processImage(inputImage);
     return recognizedText.text;
   }
 
@@ -42,11 +44,13 @@ class OfflineScannerService {
                     bottom: 10,
                     right: 10,
                     child: pw.Container(
-                      padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const pw.EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       color: PdfColors.grey200,
                       child: pw.Text(
                         'Scanned with SleekScan Free',
-                        style: const pw.TextStyle(color: PdfColors.grey700, fontSize: 10),
+                        style: const pw.TextStyle(
+                            color: PdfColors.grey700, fontSize: 10),
                       ),
                     ),
                   ),

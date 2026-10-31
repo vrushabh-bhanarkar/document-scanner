@@ -15,7 +15,7 @@ class PdfPreviewScreen extends StatefulWidget {
   final VoidCallback? onShare;
 
   const PdfPreviewScreen({
-    Key? key,
+    super.key,
     required this.pdfFile,
     required this.title,
     this.subtitle,
@@ -23,7 +23,7 @@ class PdfPreviewScreen extends StatefulWidget {
     this.showShare = true,
     this.onDownload,
     this.onShare,
-  }) : super(key: key);
+  });
 
   @override
   State<PdfPreviewScreen> createState() => _PdfPreviewScreenState();
@@ -339,10 +339,12 @@ class _PdfPreviewScreenState extends State<PdfPreviewScreen> {
 
   Future<void> _handleShare() async {
     try {
-      await Share.shareXFiles(
-        [XFile(widget.pdfFile.path)],
-        subject: widget.title,
-        text: 'Sharing ${widget.title}',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(widget.pdfFile.path)],
+          subject: widget.title,
+          text: 'Sharing ${widget.title}',
+        ),
       );
     } catch (e) {
       if (mounted) {

@@ -12,7 +12,7 @@ import '../widgets/native_ad_widget.dart';
 class WatermarkScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const WatermarkScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const WatermarkScreen({super.key, this.initialPdfFile});
 
   @override
   State<WatermarkScreen> createState() => _WatermarkScreenState();
@@ -116,7 +116,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.lightBlue.withOpacity(0.1),
+                color: Colors.lightBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -185,7 +185,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -236,7 +236,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -329,8 +329,9 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color:
-              isSelected ? Colors.lightBlue.withOpacity(0.1) : Colors.grey[50],
+          color: isSelected
+              ? Colors.lightBlue.withValues(alpha: 0.1)
+              : Colors.grey[50],
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected ? Colors.lightBlue : Colors.grey[300]!,
@@ -378,7 +379,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -458,7 +459,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -537,7 +538,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -665,8 +666,9 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
       child: Container(
         padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
-          color:
-              isSelected ? Colors.lightBlue.withOpacity(0.1) : Colors.grey[100],
+          color: isSelected
+              ? Colors.lightBlue.withValues(alpha: 0.1)
+              : Colors.grey[100],
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: isSelected ? Colors.lightBlue : Colors.grey[300]!,
@@ -695,7 +697,7 @@ class _WatermarkScreenState extends State<WatermarkScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),

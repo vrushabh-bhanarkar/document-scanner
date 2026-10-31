@@ -9,7 +9,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'screens/scan_screen.dart';
+import 'views/scan_screen.dart';
 
 import 'core/themes.dart';
 import 'core/app_config.dart';
@@ -27,6 +27,7 @@ import 'providers/subscription_provider.dart';
 import 'views/auth/login_screen.dart';
 import 'views/paywall.dart';
 import 'views/profile_screen.dart';
+import 'services/revenuecat_service.dart';
 
 List<CameraDescription> cameras = [];
 bool _isCameraResetNeeded = false;
@@ -113,10 +114,16 @@ Future<void> main() async {
     android: initializationSettingsAndroid,
     // iOS and other platforms can be added here
   );
-  // await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  await flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
   await requestNotificationPermissionIfNeeded();
 
-  // RevenueCat disabled: no purchases SDK initialization in production
+  // Initialize RevenueCat SDK
+  try {
+    await RevenueCatService.instance.init();
+    print('RevenueCat initialized successfully');
+  } catch (e) {
+    print('Error initializing RevenueCat: $e');
+  }
 
   final subscriptionProvider = SubscriptionProvider();
   await subscriptionProvider.load();
@@ -181,8 +188,7 @@ Future<void> requestNotificationPermissionIfNeeded() async {
 class DocumentScannerApp extends StatelessWidget {
   final SubscriptionProvider subscriptionProvider;
 
-  const DocumentScannerApp({Key? key, required this.subscriptionProvider})
-      : super(key: key);
+  const DocumentScannerApp({super.key, required this.subscriptionProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +241,7 @@ class DocumentScannerApp extends StatelessWidget {
 }
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -282,6 +288,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (mounted) {
       await Provider.of<DocumentProvider>(context, listen: false).initialize();
 
+      if (!mounted) return;
       // Navigate to home screen
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -339,10 +346,10 @@ class _SplashScreenState extends State<SplashScreen>
                             width: 120,
                             height: 120,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.1),
+                              color: Colors.white.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(28),
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.35),
+                                color: Colors.white.withValues(alpha: 0.35),
                                 width: 1.5,
                               ),
                               boxShadow: const [
@@ -375,7 +382,7 @@ class _SplashScreenState extends State<SplashScreen>
                           Text(
                             'Scan • Enhance • Organize',
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                             ),
                           ),
                           const SizedBox(height: 28),
@@ -386,7 +393,8 @@ class _SplashScreenState extends State<SplashScreen>
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(8)),
                               color: Colors.white,
-                              backgroundColor: Colors.white.withOpacity(0.25),
+                              backgroundColor:
+                                  Colors.white.withValues(alpha: 0.25),
                             ),
                           ),
                         ],

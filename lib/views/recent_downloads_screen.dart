@@ -2,12 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as path;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../services/file_management_service.dart';
 import '../core/themes.dart';
 
 class RecentDownloadsScreen extends StatefulWidget {
-  const RecentDownloadsScreen({Key? key}) : super(key: key);
+  const RecentDownloadsScreen({super.key});
 
   @override
   State<RecentDownloadsScreen> createState() => _RecentDownloadsScreenState();
@@ -44,7 +43,7 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child:
@@ -253,7 +252,7 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: fileColor.withOpacity(0.1),
+              color: fileColor.withValues(alpha: 0.1),
               width: 1.5,
             ),
             boxShadow: AppShadows.cardShadow,
@@ -270,13 +269,13 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          fileColor.withOpacity(0.15),
-                          fileColor.withOpacity(0.05),
+                          fileColor.withValues(alpha: 0.15),
+                          fileColor.withValues(alpha: 0.05),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: fileColor.withOpacity(0.2),
+                        color: fileColor.withValues(alpha: 0.2),
                         width: 1,
                       ),
                     ),
@@ -294,7 +293,9 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
                         Tooltip(
                           message: fileName,
                           child: Text(
-                            fileName.length > 35 ? '${fileName.substring(0, 32)}...' : fileName,
+                            fileName.length > 35
+                                ? '${fileName.substring(0, 32)}...'
+                                : fileName,
                             style: AppTextStyles.titleMedium.copyWith(
                               fontWeight: FontWeight.w700,
                               color: AppColors.gray900,
@@ -306,7 +307,8 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.schedule_rounded, size: 13, color: AppColors.gray500),
+                            Icon(Icons.schedule_rounded,
+                                size: 13, color: AppColors.gray500),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
@@ -322,7 +324,8 @@ class _RecentDownloadsScreenState extends State<RecentDownloadsScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.folder_rounded, size: 13, color: AppColors.gray500),
+                            Icon(Icons.folder_rounded,
+                                size: 13, color: AppColors.gray500),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(

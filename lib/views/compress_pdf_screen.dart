@@ -11,7 +11,7 @@ import '../widgets/native_ad_widget.dart';
 class CompressPdfScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const CompressPdfScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const CompressPdfScreen({super.key, this.initialPdfFile});
 
   @override
   State<CompressPdfScreen> createState() => _CompressPdfScreenState();
@@ -96,7 +96,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                 borderRadius: BorderRadius.circular(24.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.brown.withOpacity(0.3),
+                    color: Colors.brown.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -140,7 +140,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                   vertical: 16.h,
                 ),
                 elevation: 8,
-                shadowColor: Colors.brown.withOpacity(0.4),
+                shadowColor: Colors.brown.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),
@@ -171,7 +171,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -185,7 +185,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                     Container(
                       padding: EdgeInsets.all(10.w),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Icon(Icons.picture_as_pdf,
@@ -233,7 +233,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                   Container(
                     padding: EdgeInsets.all(12.w),
                     decoration: BoxDecoration(
-                      color: Colors.brown.withOpacity(0.05),
+                      color: Colors.brown.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Column(
@@ -264,7 +264,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                               ],
                             ),
                             Icon(Icons.arrow_forward,
-                                color: Colors.brown.withOpacity(0.3),
+                                color: Colors.brown.withValues(alpha: 0.3),
                                 size: 24.sp),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
@@ -335,7 +335,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -364,7 +364,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                 Container(
                   padding: EdgeInsets.all(12.w),
                   decoration: BoxDecoration(
-                    color: Colors.brown.withOpacity(0.1),
+                    color: Colors.brown.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Text(
@@ -426,7 +426,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -535,7 +535,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
                 backgroundColor: Colors.brown,
                 foregroundColor: Colors.white,
                 elevation: 8,
-                shadowColor: Colors.brown.withOpacity(0.4),
+                shadowColor: Colors.brown.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),
@@ -568,7 +568,7 @@ class _CompressPdfScreenState extends State<CompressPdfScreen> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.grey[50],
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey[50],
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: isSelected ? color : Colors.grey[300]!,

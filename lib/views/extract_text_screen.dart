@@ -11,7 +11,7 @@ import '../widgets/interstitial_ad_helper.dart';
 class ExtractTextScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const ExtractTextScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const ExtractTextScreen({super.key, this.initialPdfFile});
 
   @override
   State<ExtractTextScreen> createState() => _ExtractTextScreenState();
@@ -110,7 +110,7 @@ class _ExtractTextScreenState extends State<ExtractTextScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -194,7 +194,7 @@ class _ExtractTextScreenState extends State<ExtractTextScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),

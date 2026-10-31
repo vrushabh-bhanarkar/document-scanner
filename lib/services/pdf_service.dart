@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math';
 import 'dart:convert';
@@ -635,14 +634,6 @@ class PDFService {
         document.compressionLevel = sf.PdfCompressionLevel.best;
       }
 
-      // Compress images within the document
-      for (int i = 0; i < document.pages.count; i++) {
-        final page = document.pages[i];
-        // Reduce image quality based on compression level
-        final imageQuality = (compressionLevel * 100).toInt().clamp(10, 100);
-        // The compression is handled by the compression level setting above
-      }
-
       final directory = await getApplicationDocumentsDirectory();
       final originalName = pdfFile.path.split('/').last.replaceAll('.pdf', '');
       final fileName = '${originalName}_compressed_${_uuid.v4()}.pdf';
@@ -675,12 +666,15 @@ class PDFService {
           final page = document.pages[pageIndex];
           final pageSize = page.size;
 
-          final canvasW = (ann['canvasWidth'] as num?)?.toDouble() ?? pageSize.width;
-          final canvasH = (ann['canvasHeight'] as num?)?.toDouble() ?? pageSize.height;
+          final canvasW =
+              (ann['canvasWidth'] as num?)?.toDouble() ?? pageSize.width;
+          final canvasH =
+              (ann['canvasHeight'] as num?)?.toDouble() ?? pageSize.height;
 
           // helper to map widget coords to PDF coords (PDF origin at bottom-left)
           double mapX(num x) => (x.toDouble() / canvasW) * pageSize.width;
-          double mapY(num y) => pageSize.height - (y.toDouble() / canvasH) * pageSize.height;
+          double mapY(num y) =>
+              pageSize.height - (y.toDouble() / canvasH) * pageSize.height;
 
           final String type = (ann['type'] ?? 'pen') as String;
           final colorVal = (ann['color'] ?? 0xFF000000) as int;
@@ -690,10 +684,11 @@ class PDFService {
           final b = colorVal & 0xFF;
 
           final thickness = (ann['thickness'] as num?)?.toDouble() ?? 2.0;
-          final sf.PdfPen pen = sf.PdfPen(sf.PdfColor(r, g, b));
+          final sf.PdfPen pen = sf.PdfPen(sf.PdfColor(r, g, b, a));
           pen.width = thickness;
 
-          final points = (ann['points'] as List<dynamic>?)?.cast<Map<String, dynamic>>();
+          final points =
+              (ann['points'] as List<dynamic>?)?.cast<Map<String, dynamic>>();
 
           if (type == 'pen' || type == 'highlighter') {
             if (points != null && points.length > 1) {
@@ -704,7 +699,8 @@ class PDFService {
                 final y0 = mapY(p0['dy']);
                 final x1 = mapX(p1['dx']);
                 final y1 = mapY(p1['dy']);
-                page.graphics.drawLine(pen, ui.Offset(x0, y0), ui.Offset(x1, y1));
+                page.graphics
+                    .drawLine(pen, ui.Offset(x0, y0), ui.Offset(x1, y1));
               }
             }
           } else if (type == 'arrow') {
@@ -719,8 +715,10 @@ class PDFService {
               // simple arrowhead
               final angle = atan2(y1 - y0, x1 - x0);
               final head = 12.0;
-              final pa = ui.Offset(x1 - head * cos(angle - pi / 6), y1 - head * sin(angle - pi / 6));
-              final pb = ui.Offset(x1 - head * cos(angle + pi / 6), y1 - head * sin(angle + pi / 6));
+              final pa = ui.Offset(x1 - head * cos(angle - pi / 6),
+                  y1 - head * sin(angle - pi / 6));
+              final pb = ui.Offset(x1 - head * cos(angle + pi / 6),
+                  y1 - head * sin(angle + pi / 6));
               page.graphics.drawLine(pen, ui.Offset(x1, y1), pa);
               page.graphics.drawLine(pen, ui.Offset(x1, y1), pb);
             }
@@ -736,7 +734,8 @@ class PDFService {
               final top = min(y0, y1);
               final width = (x1 - x0).abs();
               final height = (y1 - y0).abs();
-              page.graphics.drawRectangle(bounds: ui.Rect.fromLTWH(left, top, width, height), pen: pen);
+              page.graphics.drawRectangle(
+                  bounds: ui.Rect.fromLTWH(left, top, width, height), pen: pen);
             }
           } else if (type == 'circle') {
             if (points != null && points.length >= 2) {
@@ -749,7 +748,10 @@ class PDFService {
               final centerX = (x0 + x1) / 2;
               final centerY = (y0 + y1) / 2;
               final radius = sqrt(pow(x1 - x0, 2) + pow(y1 - y0, 2)) / 2;
-              page.graphics.drawEllipse(ui.Rect.fromLTWH(centerX - radius, centerY - radius, radius * 2, radius * 2), pen: pen);
+              page.graphics.drawEllipse(
+                  ui.Rect.fromLTWH(centerX - radius, centerY - radius,
+                      radius * 2, radius * 2),
+                  pen: pen);
             }
           } else if (type == 'text') {
             final pos = ann['position'] as Map<String, dynamic>?;
@@ -758,8 +760,11 @@ class PDFService {
               final y = mapY(pos['dy']);
               final text = (ann['text'] ?? '') as String;
               final fontSize = (ann['thickness'] as num?)?.toDouble() ?? 12.0;
-              final sf.PdfFont font = sf.PdfStandardFont(sf.PdfFontFamily.helvetica, fontSize);
-              page.graphics.drawString(text, font, brush: sf.PdfBrushes.black, bounds: ui.Rect.fromLTWH(x, y, 200, 50));
+              final sf.PdfFont font =
+                  sf.PdfStandardFont(sf.PdfFontFamily.helvetica, fontSize);
+              page.graphics.drawString(text, font,
+                  brush: sf.PdfBrushes.black,
+                  bounds: ui.Rect.fromLTWH(x, y, 200, 50));
             }
           }
         } catch (e) {
@@ -1172,50 +1177,6 @@ class PDFService {
     return byteData!.buffer.asUint8List();
   }
 
-  /// Convert PDF page bytes to actual image using printing package
-  Future<Uint8List> _convertPDFPageToActualImage(
-      List<int> pdfBytes, Size pageSize, double scale) async {
-    try {
-      final imageBytes = await Printing.convertHtml(
-        html: '''
-        <html lang="en">
-          <head>
-            <style>
-              body { 
-                margin: 0; 
-                padding: 0; 
-                background: white;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
-              }
-              .pdf-container {
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                border: 1px solid #ddd;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="pdf-container">
-              <embed src="data:application/pdf;base64,${base64Encode(pdfBytes)}"
-                     type="application/pdf"
-                     width="${(pageSize.width * scale).round()}"
-                     height="${(pageSize.height * scale).round()}" />
-            </div>
-          </body>
-        </html>
-        ''',
-        format: pdf_lib.PdfPageFormat.a4,
-      );
-      return Uint8List.fromList(imageBytes);
-    } catch (e) {
-      print('Error converting PDF to image: $e');
-      return await _createEnhancedPlaceholderImage('PDF Page',
-          pageSize: pageSize);
-    }
-  }
-
   /// Convert PDF pages to individual image files
   Future<List<File>?> convertPdfPagesToImages({
     required File pdfFile,
@@ -1256,7 +1217,7 @@ class PDFService {
           singlePageDoc.dispose();
 
           // Use printing package raster to convert PDF page to image
-          final imageData = await Printing.raster(
+          final imageData = Printing.raster(
             Uint8List.fromList(singlePageBytes),
             pages: [0], // First (and only) page
             dpi: (quality * 200)
@@ -1460,7 +1421,8 @@ class PDFService {
       // Insert new pages from files (skip missing files)
       for (final insertFile in pagesToInsert) {
         if (!await insertFile.exists()) {
-          print('insertPagesIntoPDF: insert file missing, skipping: ${insertFile.path}');
+          print(
+              'insertPagesIntoPDF: insert file missing, skipping: ${insertFile.path}');
           continue;
         }
 
@@ -1770,9 +1732,9 @@ class PDFService {
 
       // Convert Flutter Color to PdfColor using 0-255 RGB ints
       final pdfColor = sf.PdfColor(
-        textColor.red,
-        textColor.green,
-        textColor.blue,
+        (textColor.r * 255.0).round().clamp(0, 255),
+        (textColor.g * 255.0).round().clamp(0, 255),
+        (textColor.b * 255.0).round().clamp(0, 255),
       );
       final brush = sf.PdfSolidBrush(pdfColor);
 
@@ -1870,9 +1832,9 @@ class PDFService {
               style: sf.PdfFontStyle.bold);
 
           final pdfColor = sf.PdfColor(
-            textColor.red,
-            textColor.green,
-            textColor.blue,
+            (textColor.r * 255.0).round().clamp(0, 255),
+            (textColor.g * 255.0).round().clamp(0, 255),
+            (textColor.b * 255.0).round().clamp(0, 255),
           );
           final brush = sf.PdfSolidBrush(pdfColor);
 
@@ -2115,7 +2077,7 @@ class PDFService {
 
       // Extract text from PDF
       final extractedText = await extractTextFromPdf(pdfFile: pdfFile);
-      
+
       if (extractedText.isEmpty) {
         print('No text found in PDF: ${pdfFile.path}');
         return null;
@@ -2129,14 +2091,18 @@ class PDFService {
       }
 
       // Create unique DOCX file
-      final baseName = pdfFile.path.split('/').last.replaceAll('.pdf', '').replaceAll('.PDF', '');
+      final baseName = pdfFile.path
+          .split('/')
+          .last
+          .replaceAll('.pdf', '')
+          .replaceAll('.PDF', '');
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = '${baseName}_${timestamp}.docx';
+      final fileName = '${baseName}_$timestamp.docx';
       final outputFile = File('${convertDir.path}/$fileName');
 
       // Create minimal DOCX structure
       final docxBytes = _createDocxFromText(extractedText);
-      
+
       // Validate bytes were generated
       if (docxBytes.isEmpty) {
         print('Failed to generate DOCX bytes');
@@ -2172,9 +2138,9 @@ class PDFService {
 
       // Extract text from DOCX
       final extractedText = await _extractTextFromDocx(wordFile);
-      
+
       print('Extracted text from Word: length=${extractedText.length}');
-      
+
       if (extractedText.isEmpty) {
         print('No text found in Word document: ${wordFile.path}');
         return null;
@@ -2188,12 +2154,16 @@ class PDFService {
       }
 
       // Create unique PDF file
-      final baseName = wordFile.path.split('/').last.replaceAll('.docx', '').replaceAll('.doc', '');
+      final baseName = wordFile.path
+          .split('/')
+          .last
+          .replaceAll('.docx', '')
+          .replaceAll('.doc', '');
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = '${baseName}_${timestamp}.pdf';
-      
+      final fileName = '${baseName}_$timestamp.pdf';
+
       final pdf = pw.Document();
-      
+
       // Split text into pages based on line count and character count
       final lines = extractedText.split('\n');
       List<String> currentPageLines = [];
@@ -2201,15 +2171,15 @@ class PDFService {
       int pageCount = 0;
       const int maxCharsPerPage = 3000;
       const int maxLinesPerPage = 50;
-      
+
       print('Creating PDF from ${lines.length} lines');
-      
+
       for (int i = 0; i < lines.length; i++) {
         final line = lines[i];
-        
+
         // Add page break if we've exceeded limits and have content
-        if ((currentCharCount + line.length > maxCharsPerPage || 
-             currentPageLines.length >= maxLinesPerPage) && 
+        if ((currentCharCount + line.length > maxCharsPerPage ||
+                currentPageLines.length >= maxLinesPerPage) &&
             currentPageLines.isNotEmpty) {
           // Add current page
           _addPageToPdf(pdf, currentPageLines);
@@ -2217,11 +2187,11 @@ class PDFService {
           currentPageLines = [];
           currentCharCount = 0;
         }
-        
+
         currentPageLines.add(line);
         currentCharCount += line.length + 1; // +1 for newline
       }
-      
+
       // Add remaining lines
       if (currentPageLines.isNotEmpty) {
         _addPageToPdf(pdf, currentPageLines);
@@ -2237,9 +2207,9 @@ class PDFService {
 
       final outputFile = File('${convertDir.path}/$fileName');
       final pdfBytes = await pdf.save();
-      
+
       print('Generated PDF: ${pdfBytes.length} bytes, $pageCount pages');
-      
+
       // Validate bytes were generated
       if (pdfBytes.isEmpty) {
         print('Failed to generate PDF bytes');
@@ -2255,7 +2225,8 @@ class PDFService {
       }
 
       final fileSize = await outputFile.length();
-      print('Successfully converted Word to PDF: ${outputFile.path} (${fileSize} bytes)');
+      print(
+          'Successfully converted Word to PDF: ${outputFile.path} ($fileSize bytes)');
       return outputFile;
     } catch (e) {
       print('Error converting Word to PDF: $e');
@@ -2288,14 +2259,16 @@ class PDFService {
   /// Create DOCX file bytes from text
   Uint8List _createDocxFromText(String text) {
     // Create minimal DOCX XML structure
-    final documentXml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    final documentXml =
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
   <w:body>
 ${_textToParagraphs(text)}
   </w:body>
 </w:document>''';
 
-    final contentTypesXml = '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    final contentTypesXml =
+        '''<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="xml" ContentType="application/xml"/>
@@ -2309,19 +2282,22 @@ ${_textToParagraphs(text)}
 
     // Create ZIP archive (DOCX is a ZIP file)
     final archive = Archive();
-    
-    archive.addFile(ArchiveFile('[Content_Types].xml', contentTypesXml.length, utf8.encode(contentTypesXml)));
-    archive.addFile(ArchiveFile('_rels/.rels', relsXml.length, utf8.encode(relsXml)));
-    archive.addFile(ArchiveFile('word/document.xml', documentXml.length, utf8.encode(documentXml)));
 
-    return Uint8List.fromList(ZipEncoder().encode(archive)!);
+    archive.addFile(ArchiveFile('[Content_Types].xml', contentTypesXml.length,
+        utf8.encode(contentTypesXml)));
+    archive.addFile(
+        ArchiveFile('_rels/.rels', relsXml.length, utf8.encode(relsXml)));
+    archive.addFile(ArchiveFile(
+        'word/document.xml', documentXml.length, utf8.encode(documentXml)));
+
+    return Uint8List.fromList(ZipEncoder().encode(archive));
   }
 
   /// Convert text to Word paragraphs XML
   String _textToParagraphs(String text) {
     final lines = text.split('\n');
     final buffer = StringBuffer();
-    
+
     for (final line in lines) {
       final escapedLine = line
           .replaceAll('&', '&amp;')
@@ -2329,10 +2305,11 @@ ${_textToParagraphs(text)}
           .replaceAll('>', '&gt;')
           .replaceAll('"', '&quot;')
           .replaceAll("'", '&apos;');
-      
-      buffer.write('    <w:p><w:r><w:t xml:space="preserve">$escapedLine</w:t></w:r></w:p>\n');
+
+      buffer.write(
+          '    <w:p><w:r><w:t xml:space="preserve">$escapedLine</w:t></w:r></w:p>\n');
     }
-    
+
     return buffer.toString();
   }
 
@@ -2341,10 +2318,10 @@ ${_textToParagraphs(text)}
     try {
       final bytes = await docxFile.readAsBytes();
       print('DOCX file size: ${bytes.length} bytes');
-      
+
       final archive = ZipDecoder().decodeBytes(bytes);
       print('DOCX archive extracted, found ${archive.length} files');
-      
+
       // Find document.xml
       for (final file in archive) {
         if (file.name == 'word/document.xml') {
@@ -2352,11 +2329,12 @@ ${_textToParagraphs(text)}
           final content = utf8.decode(file.content as List<int>);
           final extractedText = _extractTextFromDocumentXml(content);
           print('Extracted text length: ${extractedText.length} characters');
-          print('First 200 chars: ${extractedText.substring(0, extractedText.length > 200 ? 200 : extractedText.length)}');
+          print(
+              'First 200 chars: ${extractedText.substring(0, extractedText.length > 200 ? 200 : extractedText.length)}');
           return extractedText;
         }
       }
-      
+
       print('document.xml not found in DOCX archive');
       return '';
     } catch (e) {
@@ -2368,7 +2346,7 @@ ${_textToParagraphs(text)}
   /// Extract text from document.xml content
   String _extractTextFromDocumentXml(String xml) {
     final buffer = StringBuffer();
-    
+
     try {
       // Replace common XML entities first
       String processed = xml
@@ -2377,29 +2355,27 @@ ${_textToParagraphs(text)}
           .replaceAll('&gt;', '>')
           .replaceAll('&quot;', '"')
           .replaceAll('&apos;', "'");
-      
+
       // Extract text between <w:t> tags - improved regex to handle spaces
       final regex = RegExp(r'<w:t[^>]*>([^<]*?)</w:t>', multiLine: true);
       final matches = regex.allMatches(processed);
-      
+
       print('Found ${matches.length} text elements in document.xml');
-      
-      String previousEnd = '';
+
       for (final match in matches) {
         final text = match.group(1);
         if (text != null) {
           buffer.write(text);
-          previousEnd = text;
         }
       }
-      
+
       // Also try to extract text using a more aggressive method
       // Look for content between > and < that's not empty
       if (buffer.isEmpty) {
         print('No text found with standard regex, trying alternative method');
         final altRegex = RegExp(r'>([^<]+?)<');
         final altMatches = altRegex.allMatches(processed);
-        
+
         for (final match in altMatches) {
           final text = match.group(1)?.trim();
           if (text != null && text.isNotEmpty && !text.startsWith('w:')) {
@@ -2408,14 +2384,14 @@ ${_textToParagraphs(text)}
           }
         }
       }
-      
+
       // Restore paragraph breaks
       String result = buffer.toString();
-      
+
       // Clean up excessive whitespace
       result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
       result = result.replaceAll(RegExp(r' {2,}'), ' ');
-      
+
       return result.trim();
     } catch (e) {
       print('Error parsing XML: $e');

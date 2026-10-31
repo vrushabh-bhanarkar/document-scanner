@@ -4,13 +4,11 @@ import 'package:file_picker/file_picker.dart';
 import 'dart:io';
 import '../services/pdf_service.dart';
 import '../widgets/pdf_preview_screen.dart';
-import '../widgets/native_ad_widget.dart';
 
 class PasswordProtectScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const PasswordProtectScreen({Key? key, this.initialPdfFile})
-      : super(key: key);
+  const PasswordProtectScreen({super.key, this.initialPdfFile});
 
   @override
   State<PasswordProtectScreen> createState() => _PasswordProtectScreenState();
@@ -23,7 +21,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
   File? selectedPdf;
   bool isLoading = false;
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final bool _obscureConfirmPassword = true;
 
   @override
   void initState() {
@@ -85,7 +83,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
                 borderRadius: BorderRadius.circular(24.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.3),
+                    color: Colors.orange.withValues(alpha: 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -129,7 +127,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
                   vertical: 16.h,
                 ),
                 elevation: 8,
-                shadowColor: Colors.orange.withOpacity(0.4),
+                shadowColor: Colors.orange.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),
@@ -160,7 +158,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -171,7 +169,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
                 Container(
                   padding: EdgeInsets.all(10.w),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(Icons.picture_as_pdf,
@@ -226,7 +224,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -376,7 +374,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
                 backgroundColor: Colors.orange,
                 disabledBackgroundColor: Colors.grey[400],
                 elevation: _canAddPassword() ? 10 : 0,
-                shadowColor: Colors.orange.withOpacity(0.4),
+                shadowColor: Colors.orange.withValues(alpha: 0.4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),
@@ -387,8 +385,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
                       width: 24.w,
                       child: const CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.white),
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
                   : Row(
@@ -410,35 +407,6 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
             ),
           ),
           SizedBox(height: 24.h),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBenefitItem(String text) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.h),
-      child: Row(
-        children: [
-          Icon(Icons.check_circle, color: Colors.blue.shade700, size: 16.sp),
-          SizedBox(width: 8.w),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 13.sp,
-                color: Colors.blue.shade700,
-                height: 1.4,
-              ),
-            ),
-          ),
-          SizedBox(height: 24.h),
-
-          // Native Ad
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: NativeAdWidget(),
-          ),
         ],
       ),
     );
@@ -476,9 +444,10 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
     return Container(
       padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
-        color: colors[strength].withOpacity(0.1),
+        color: colors[strength].withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: colors[strength].withOpacity(0.3), width: 1.5),
+        border: Border.all(
+            color: colors[strength].withValues(alpha: 0.3), width: 1.5),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -497,7 +466,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  color: colors[strength].withOpacity(0.2),
+                  color: colors[strength].withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
@@ -530,11 +499,16 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
   List<Widget> _buildPasswordRequirements(String password) {
     final checks = [
       ('At least 8 characters', password.length >= 8),
-      ('Uppercase & lowercase', password.contains(RegExp(r'[A-Z]')) &&
-          password.contains(RegExp(r'[a-z]'))),
+      (
+        'Uppercase & lowercase',
+        password.contains(RegExp(r'[A-Z]')) &&
+            password.contains(RegExp(r'[a-z]'))
+      ),
       ('Contains numbers', password.contains(RegExp(r'[0-9]'))),
-      ('Special characters',
-          password.contains(RegExp(r'[!@#$%^&*(),.?\":{}|<>]'))),
+      (
+        'Special characters',
+        password.contains(RegExp(r'[!@#$%^&*(),.?\":{}|<>]'))
+      ),
     ];
 
     return [
@@ -554,8 +528,7 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: check.$2 ? Colors.green : Colors.grey[600],
-                    fontWeight:
-                        check.$2 ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: check.$2 ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
               ],
@@ -570,7 +543,9 @@ class _PasswordProtectScreenState extends State<PasswordProtectScreen> {
 
     if (password.length >= 8) strength++;
     if (password.contains(RegExp(r'[A-Z]')) &&
-        password.contains(RegExp(r'[a-z]'))) strength++;
+        password.contains(RegExp(r'[a-z]'))) {
+      strength++;
+    }
     if (password.contains(RegExp(r'[0-9]'))) strength++;
     if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength++;
 

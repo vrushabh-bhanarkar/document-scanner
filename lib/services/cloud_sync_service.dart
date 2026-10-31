@@ -14,7 +14,8 @@ class CloudSyncService {
   Future<bool> checkIsPro() async {
     try {
       final customerInfo = await Purchases.getCustomerInfo();
-      final hasRCPro = customerInfo.entitlements.all['pro_features']?.isActive ?? false;
+      final hasRCPro =
+          customerInfo.entitlements.all['pro_features']?.isActive ?? false;
       if (hasRCPro) return true;
     } catch (_) {
       // Offline fallback
@@ -35,7 +36,8 @@ class CloudSyncService {
   }) async {
     final isPro = await checkIsPro();
     if (!isPro) {
-      throw Exception('Cloud Sync is a Pro feature. Upgrade to enable web access.');
+      throw Exception(
+          'Cloud Sync is a Pro feature. Upgrade to enable web access.');
     }
 
     final user = _auth.currentUser;
@@ -44,7 +46,8 @@ class CloudSyncService {
     }
 
     final sanitizedTitle = title.replaceAll(RegExp(r'[^\w\.-]'), '_');
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}_$sanitizedTitle.pdf';
+    final fileName =
+        '${DateTime.now().millisecondsSinceEpoch}_$sanitizedTitle.pdf';
     final storagePath = 'user_scans/${user.uid}/$fileName';
 
     // 1. Upload to Firebase Storage

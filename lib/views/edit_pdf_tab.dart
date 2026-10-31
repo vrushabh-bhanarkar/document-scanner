@@ -20,12 +20,11 @@ import 'page_reorder_screen.dart';
 import 'convert_pdf_screen.dart';
 import 'add_signature_screen.dart';
 import '../providers/document_provider.dart';
-import '../models/document_model.dart';
 import 'package:provider/provider.dart';
 import '../widgets/native_ad_widget.dart';
 
 class EditPdfTab extends StatefulWidget {
-  const EditPdfTab({Key? key}) : super(key: key);
+  const EditPdfTab({super.key});
 
   @override
   State<EditPdfTab> createState() => _EditPdfTabState();
@@ -354,10 +353,10 @@ class _EditPdfTabState extends State<EditPdfTab> with TickerProviderStateMixin {
                 opacity: 0.6,
                 child: TextButton(
                   onPressed: null,
-                  child: Text('Coming Soon'),
                   style: TextButton.styleFrom(
                     foregroundColor: const Color(0xFF667EEA),
                   ),
+                  child: Text('Coming Soon'),
                 ),
               ),
             ],
@@ -520,152 +519,6 @@ class _EditPdfTabState extends State<EditPdfTab> with TickerProviderStateMixin {
   //     ],
   //   );
   // }
-
-  Widget _buildEnhancedPdfItem(DocumentModel doc) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-        border: Border.all(
-          color: Colors.grey.withValues(alpha: 0.1),
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFFEF4444).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Icon(
-              Icons.picture_as_pdf_rounded,
-              color: const Color(0xFFEF4444),
-              size: 24.sp,
-            ),
-          ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  doc.title,
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF1E293B),
-                    letterSpacing: 0.2,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  'Created: ${doc.createdAt.day}/${doc.createdAt.month}/${doc.createdAt.year}',
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: const Color(0xFF64748B),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFF667EEA).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: Icon(
-              Icons.edit_rounded,
-              color: const Color(0xFF667EEA),
-              size: 20.sp,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return Container(
-      padding: EdgeInsets.all(32.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Center(
-        child: Column(
-          children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667EEA)),
-              strokeWidth: 3,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Loading PDFs...',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF1E293B),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Container(
-      padding: EdgeInsets.all(32.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Center(
-        child: Column(
-          children: [
-            Icon(
-              Icons.picture_as_pdf_rounded,
-              color: const Color(0xFF667EEA),
-              size: 48.sp,
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'No recent PDFs found',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF1E293B),
-              ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Edit your PDFs with our powerful tools.',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: const Color(0xFF64748B),
-                height: 1.4,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   void _handleToolAction(String action) {
     switch (action) {
       case 'merge':

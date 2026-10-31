@@ -9,7 +9,7 @@ enum PDFQuality {
 }
 
 class ExportSettingsScreen extends StatefulWidget {
-  const ExportSettingsScreen({Key? key}) : super(key: key);
+  const ExportSettingsScreen({super.key});
 
   @override
   State<ExportSettingsScreen> createState() => _ExportSettingsScreenState();
@@ -204,7 +204,7 @@ class _ExportSettingsScreenState extends State<ExportSettingsScreen> {
                             Text(
                               'Remove watermarks & unlock advanced features',
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                               ),
                             ),
                           ],
