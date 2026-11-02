@@ -10,7 +10,7 @@ import '../widgets/native_ad_widget.dart';
 class PdfMetadataScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const PdfMetadataScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const PdfMetadataScreen({super.key, this.initialPdfFile});
 
   @override
   State<PdfMetadataScreen> createState() => _PdfMetadataScreenState();
@@ -141,7 +141,7 @@ class _PdfMetadataScreenState extends State<PdfMetadataScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -210,7 +210,7 @@ class _PdfMetadataScreenState extends State<PdfMetadataScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -319,7 +319,7 @@ class _PdfMetadataScreenState extends State<PdfMetadataScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),

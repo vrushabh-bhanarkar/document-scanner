@@ -9,7 +9,7 @@ import '../services/pdf_service.dart';
 class ConvertPdfScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const ConvertPdfScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const ConvertPdfScreen({super.key, this.initialPdfFile});
 
   @override
   State<ConvertPdfScreen> createState() => _ConvertPdfScreenState();
@@ -75,7 +75,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.deepOrange.withOpacity(0.1),
+                color: Colors.deepOrange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -159,7 +159,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -210,7 +210,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -368,7 +368,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
       child: Container(
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.grey[50],
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.grey[50],
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
             color: isSelected ? color : Colors.grey[300]!,
@@ -426,7 +426,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -496,7 +496,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -541,7 +541,7 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -580,7 +580,9 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
       child: Container(
         padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.blue.withOpacity(0.1) : Colors.grey[100],
+          color: isSelected
+              ? Colors.blue.withValues(alpha: 0.1)
+              : Colors.grey[100],
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
             color: isSelected ? Colors.blue : Colors.grey[300]!,
@@ -854,7 +856,8 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
                                 child: Text(
                                   'Saved Location:',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold, fontSize: 12.sp),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12.sp),
                                 ),
                               ),
                             ],
@@ -908,17 +911,21 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
 
   Future<bool> _convertToText() async {
     try {
-      final extracted = await _pdfService.extractTextFromPdf(pdfFile: selectedPdf!);
+      final extracted =
+          await _pdfService.extractTextFromPdf(pdfFile: selectedPdf!);
       if (extracted.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No text found in PDF'), backgroundColor: Colors.red),
+          const SnackBar(
+              content: Text('No text found in PDF'),
+              backgroundColor: Colors.red),
         );
         return false;
       }
 
       final dir = await getApplicationDocumentsDirectory();
       final base = selectedPdf!.path.split('/').last.replaceAll('.pdf', '');
-      final outFile = File('${dir.path}/${base}_${DateTime.now().millisecondsSinceEpoch}.txt');
+      final outFile = File(
+          '${dir.path}/${base}_${DateTime.now().millisecondsSinceEpoch}.txt');
       await outFile.writeAsString(extracted);
 
       if (mounted) {
@@ -940,11 +947,14 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
                 SizedBox(height: 12.h),
                 Text('Saved to:'),
                 SizedBox(height: 6.h),
-                Text(outFile.path, style: TextStyle(color: Colors.grey[700], fontSize: 12.sp)),
+                Text(outFile.path,
+                    style: TextStyle(color: Colors.grey[700], fontSize: 12.sp)),
               ],
             ),
             actions: [
-              ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK')),
             ],
           ),
         );
@@ -962,10 +972,13 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
 
   Future<bool> _convertToHtml() async {
     try {
-      final extracted = await _pdfService.extractTextFromPdf(pdfFile: selectedPdf!);
+      final extracted =
+          await _pdfService.extractTextFromPdf(pdfFile: selectedPdf!);
       if (extracted.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No text found in PDF'), backgroundColor: Colors.red),
+          const SnackBar(
+              content: Text('No text found in PDF'),
+              backgroundColor: Colors.red),
         );
         return false;
       }
@@ -979,7 +992,8 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
 
       final dir = await getApplicationDocumentsDirectory();
       final base = selectedPdf!.path.split('/').last.replaceAll('.pdf', '');
-      final outFile = File('${dir.path}/${base}_${DateTime.now().millisecondsSinceEpoch}.html');
+      final outFile = File(
+          '${dir.path}/${base}_${DateTime.now().millisecondsSinceEpoch}.html');
       await outFile.writeAsString(html);
 
       if (mounted) {
@@ -1001,11 +1015,14 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
                 SizedBox(height: 12.h),
                 Text('Saved to:'),
                 SizedBox(height: 6.h),
-                Text(outFile.path, style: TextStyle(color: Colors.grey[700], fontSize: 12.sp)),
+                Text(outFile.path,
+                    style: TextStyle(color: Colors.grey[700], fontSize: 12.sp)),
               ],
             ),
             actions: [
-              ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
+              ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK')),
             ],
           ),
         );
@@ -1023,8 +1040,9 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
 
   Future<bool> _convertToWord() async {
     try {
-      final wordFile = await _pdfService.convertPdfToWord(pdfFile: selectedPdf!);
-      
+      final wordFile =
+          await _pdfService.convertPdfToWord(pdfFile: selectedPdf!);
+
       if (wordFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -1052,7 +1070,8 @@ class _ConvertPdfScreenState extends State<ConvertPdfScreen> {
               children: [
                 Text('Successfully converted PDF to Word document.'),
                 SizedBox(height: 12.h),
-                Text('Saved to:', style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('Saved to:',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 SizedBox(height: 6.h),
                 Text(
                   wordFile.path,

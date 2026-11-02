@@ -3,7 +3,7 @@ import '../core/themes.dart';
 import '../widgets/app_buttons.dart';
 
 class ExportSuccessScreen extends StatefulWidget {
-  const ExportSuccessScreen({Key? key}) : super(key: key);
+  const ExportSuccessScreen({super.key});
 
   @override
   State<ExportSuccessScreen> createState() => _ExportSuccessScreenState();
@@ -54,7 +54,7 @@ class _ExportSuccessScreenState extends State<ExportSuccessScreen>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.primaryBlue.withOpacity(0.3),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.3),
                             blurRadius: 40,
                             offset: const Offset(0, 12),
                           ),

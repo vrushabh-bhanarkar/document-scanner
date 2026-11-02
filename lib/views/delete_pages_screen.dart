@@ -9,7 +9,7 @@ import '../widgets/native_ad_widget.dart';
 class DeletePagesScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const DeletePagesScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const DeletePagesScreen({super.key, this.initialPdfFile});
 
   @override
   State<DeletePagesScreen> createState() => _DeletePagesScreenState();
@@ -79,7 +79,7 @@ class _DeletePagesScreenState extends State<DeletePagesScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.pink.withOpacity(0.1),
+                color: Colors.pink.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -189,7 +189,7 @@ class _DeletePagesScreenState extends State<DeletePagesScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -254,7 +254,7 @@ class _DeletePagesScreenState extends State<DeletePagesScreen> {
                 borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     spreadRadius: 1,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
@@ -291,22 +291,22 @@ class _DeletePagesScreenState extends State<DeletePagesScreen> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _clearSelection,
-                          child: const Text('Clear All'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey.shade100,
                             foregroundColor: Colors.grey.shade700,
                           ),
+                          child: const Text('Clear All'),
                         ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _selectRange,
-                          child: const Text('Select Range'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.pink.shade100,
                             foregroundColor: Colors.pink,
                           ),
+                          child: const Text('Select Range'),
                         ),
                       ),
                     ],

@@ -1,13 +1,10 @@
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:uuid/uuid.dart';
 import 'package:hive/hive.dart';
 import '../models/document_model.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 
 class FileManagementService {
@@ -251,10 +248,12 @@ class FileManagementService {
       final file = File(document.filePath);
       if (!await file.exists()) return false;
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        subject: subject ?? document.title,
-        text: 'Sharing document: ${document.title}',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: subject ?? document.title,
+          text: 'Sharing document: ${document.title}',
+        ),
       );
       return true;
     } catch (e) {
@@ -452,10 +451,10 @@ class FileManagementService {
     try {
       print('[saveToGallery] Called with file: ${file.path}');
       if (Platform.isAndroid) {
-        const MethodChannel _channel =
+        const MethodChannel channel =
             MethodChannel('com.sleekscan.documentscanner/files');
         final fileName = file.path.split('/').last;
-        final bool? result = await _channel.invokeMethod('saveImageToGallery', {
+        final bool? result = await channel.invokeMethod('saveImageToGallery', {
           'filePath': file.path,
           'fileName': fileName,
         });
@@ -492,16 +491,15 @@ class FileManagementService {
     try {
       print('[saveToDownloads] Called with file: ${file.path}');
       if (Platform.isAndroid) {
-        const MethodChannel _channel =
+        const MethodChannel channel =
             MethodChannel('com.sleekscan.documentscanner/files');
         final fileName = file.path.split('/').last;
         final String mimeType = fileName.toLowerCase().endsWith('.pdf')
             ? 'application/pdf'
-            : fileName.toLowerCase().endsWith('.docx') 
-            ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            : 'image/jpeg';
-        final bool? result =
-            await _channel.invokeMethod('saveFileToDownloads', {
+            : fileName.toLowerCase().endsWith('.docx')
+                ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                : 'image/jpeg';
+        final bool? result = await channel.invokeMethod('saveFileToDownloads', {
           'filePath': file.path,
           'fileName': fileName,
           'mimeType': mimeType,
@@ -550,9 +548,9 @@ class FileManagementService {
   Future<List<Map<String, dynamic>>> getRecentDownloads(
       {int limit = 20}) async {
     await initialize();
-    
+
     final trackedFiles = <Map<String, dynamic>>[];
-    
+
     // First, get files from Hive database (recently saved files)
     for (final filePath in _recentDownloadsBox.keys) {
       final file = File(filePath);
@@ -566,12 +564,12 @@ class FileManagementService {
         await _recentDownloadsBox.delete(filePath);
       }
     }
-    
+
     // Also scan Downloads directory for any other files
     final downloadsDir = Directory('/storage/emulated/0/Download');
     if (await downloadsDir.exists()) {
       final dirFiles = downloadsDir.listSync().whereType<File>().toList();
-      
+
       for (final file in dirFiles) {
         // Only add if not already in tracked files
         if (!trackedFiles.any((f) => f['path'] == file.path)) {
@@ -582,10 +580,11 @@ class FileManagementService {
         }
       }
     }
-    
+
     // Sort by modification date (newest first)
-    trackedFiles.sort((a, b) => (b['modified'] as DateTime).compareTo(a['modified'] as DateTime));
-    
+    trackedFiles.sort((a, b) =>
+        (b['modified'] as DateTime).compareTo(a['modified'] as DateTime));
+
     return trackedFiles.take(limit).toList();
   }
 

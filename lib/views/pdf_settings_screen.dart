@@ -71,14 +71,14 @@ class PdfSettingsScreen extends StatefulWidget {
   final CameraFramePreset initialCameraFrame;
 
   const PdfSettingsScreen({
-    Key? key,
+    super.key,
     required this.initialPageSize,
     required this.initialFitToPage,
     required this.initialMargin,
     required this.initialAddPageNumbers,
     this.initialWatermark,
     required this.initialCameraFrame,
-  }) : super(key: key);
+  });
 
   @override
   State<PdfSettingsScreen> createState() => _PdfSettingsScreenState();

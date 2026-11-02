@@ -10,18 +10,16 @@ import '../core/themes.dart';
 import 'package:path_provider/path_provider.dart';
 import '../widgets/pdf_preview_screen.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
-import '../widgets/pdf_preview_screen.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class AddSignatureScreen extends StatefulWidget {
   final File pdfFile;
   final int initialPage;
 
   const AddSignatureScreen({
-    Key? key,
+    super.key,
     required this.pdfFile,
     this.initialPage = 1,
-  }) : super(key: key);
+  });
 
   @override
   State<AddSignatureScreen> createState() => _AddSignatureScreenState();
@@ -34,8 +32,6 @@ class _AddSignatureScreenState extends State<AddSignatureScreen>
   Color _currentPenColor = Colors.black;
 
   File? _uploadedSignatureFile;
-  Uint8List? _currentSignatureBytes;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -106,10 +102,6 @@ class _AddSignatureScreenState extends State<AddSignatureScreen>
       return;
     }
 
-    setState(() {
-      _currentSignatureBytes = signature;
-    });
-
     _navigateToPlacementScreen(signature);
   }
 
@@ -122,10 +114,6 @@ class _AddSignatureScreenState extends State<AddSignatureScreen>
     }
 
     final bytes = await _uploadedSignatureFile!.readAsBytes();
-    setState(() {
-      _currentSignatureBytes = bytes;
-    });
-
     _navigateToPlacementScreen(bytes);
   }
 
@@ -199,7 +187,7 @@ class _AddSignatureScreenState extends State<AddSignatureScreen>
               borderRadius: BorderRadius.circular(16.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -378,7 +366,7 @@ class _AddSignatureScreenState extends State<AddSignatureScreen>
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
@@ -506,7 +494,7 @@ class _AddSignatureScreenState extends State<AddSignatureScreen>
               Container(
                 padding: EdgeInsets.all(12.w),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Icon(
@@ -558,11 +546,11 @@ class SignaturePlacementScreen extends StatefulWidget {
   final int initialPage;
 
   const SignaturePlacementScreen({
-    Key? key,
+    super.key,
     required this.pdfFile,
     required this.signatureBytes,
     this.initialPage = 1,
-  }) : super(key: key);
+  });
 
   @override
   State<SignaturePlacementScreen> createState() =>
@@ -623,7 +611,8 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
       // Get screen dimensions from the PDF viewer
       RenderBox? renderBox =
           _pdfViewKey.currentContext?.findRenderObject() as RenderBox?;
-      final viewerWidth = renderBox?.size.width ?? MediaQuery.of(context).size.width - 32;
+      final viewerWidth =
+          renderBox?.size.width ?? MediaQuery.of(context).size.width - 32;
       final viewerHeight = renderBox?.size.height ?? 500;
 
       // Convert signature bytes to PdfBitmap
@@ -668,8 +657,9 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
         final pdfHeight = _signatureHeight * scaleY;
 
         // Ensure coordinates are within bounds
-        if (pdfX >= 0 && pdfY >= 0 && 
-            pdfX + pdfWidth <= pageSize.width && 
+        if (pdfX >= 0 &&
+            pdfY >= 0 &&
+            pdfX + pdfWidth <= pageSize.width &&
             pdfY + pdfHeight <= pageSize.height) {
           // Draw signature on PDF
           page.graphics.drawImage(
@@ -999,7 +989,7 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                       borderRadius: BorderRadius.circular(16.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -1075,7 +1065,8 @@ class _SignaturePlacementScreenState extends State<SignaturePlacementScreen> {
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
+                                          color: Colors.black
+                                              .withValues(alpha: 0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),

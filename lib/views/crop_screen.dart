@@ -80,42 +80,6 @@ class _CropScreenState extends State<CropScreen> {
     }
   }
 
-  Future<void> _onCropped(Uint8List croppedBytes) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final croppedDir = Directory('${dir.path}/cropped_images');
-      if (!await croppedDir.exists()) {
-        await croppedDir.create(recursive: true);
-      }
-      final path =
-          '${croppedDir.path}/cropped_${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final file = File(path);
-
-      // If Original mode is selected, use original image bytes
-      final bytesToSave =
-          _cropMode == CropMode.original ? _imageBytes! : croppedBytes;
-
-      await file.writeAsBytes(bytesToSave, flush: true);
-
-      if (!mounted) return;
-      await Provider.of<DocumentProvider>(context, listen: false)
-          .setCurrentImagePath(path);
-      if (!mounted) return;
-      // Clear cropping state and any timeout before leaving
-      _cropTimeout?.cancel();
-      _cropTimeout = null;
-      if (mounted) setState(() => _isCropping = false);
-      Navigator.pop(context, {'cropped': true, 'path': path});
-    } catch (e) {
-      if (!mounted) return;
-      _cropTimeout?.cancel();
-      _cropTimeout = null;
-      setState(() => _isCropping = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to save cropped image: $e')),
-      );
-    }
-  }
 
   Future<void> _startCrop() async {
     print('CropScreen: _startCrop called, mode: $_cropMode');
@@ -259,7 +223,7 @@ class _CropScreenState extends State<CropScreen> {
               Text(
                 'Loading image...',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withValues(alpha: 0.9),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -279,14 +243,14 @@ class _CropScreenState extends State<CropScreen> {
             children: [
               Icon(
                 Icons.image_not_supported_outlined,
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withValues(alpha: 0.5),
                 size: 64,
               ),
               const SizedBox(height: 16),
               Text(
                 'Unable to load image',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -340,10 +304,10 @@ class _CropScreenState extends State<CropScreen> {
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: AppColors.primaryBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.primaryBlue.withOpacity(0.3),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -377,7 +341,6 @@ class _CropScreenState extends State<CropScreen> {
                   mode: CropMode.original,
                   icon: Icons.image_outlined,
                   label: 'Original',
-             
                 ),
               ),
               const SizedBox(width: 12),
@@ -422,7 +385,7 @@ class _CropScreenState extends State<CropScreen> {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withOpacity(0.3),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -461,7 +424,7 @@ class _CropScreenState extends State<CropScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 16,
             offset: const Offset(0, -2),
           ),
@@ -501,7 +464,7 @@ class _CropScreenState extends State<CropScreen> {
                   boxShadow: isEnabled
                       ? [
                           BoxShadow(
-                            color: AppColors.primaryBlue.withOpacity(0.3),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.3),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -560,7 +523,7 @@ class _CropScreenState extends State<CropScreen> {
           ),
           if (_isCropping)
             Container(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               child: Center(
                 child: Container(
                   padding: const EdgeInsets.all(32),
@@ -569,7 +532,7 @@ class _CropScreenState extends State<CropScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -694,7 +657,7 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
       final destHeight =
           ((heightLeft + heightRight) / 2).round().clamp(10, image.height * 3);
 
-      print('PerspectiveCrop: Destination size: ${destWidth}x${destHeight}');
+      print('PerspectiveCrop: Destination size: ${destWidth}x$destHeight');
       print(
           'PerspectiveCrop: Aspect ratio: ${(destWidth / destHeight).toStringAsFixed(2)}');
 
@@ -713,7 +676,7 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
       // Resize to match the calculated dimensions to preserve aspect ratio
       if (cropped.width != destWidth || cropped.height != destHeight) {
         print(
-            'PerspectiveCrop: Resizing from ${cropped.width}x${cropped.height} to ${destWidth}x${destHeight}');
+            'PerspectiveCrop: Resizing from ${cropped.width}x${cropped.height} to ${destWidth}x$destHeight');
         cropped = img.copyResize(
           cropped,
           width: destWidth,
@@ -852,8 +815,9 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
                           color: Colors.grey[900],
                           width: displayWidth,
                           height: displayHeight,
-                          child:  Center(
-                                  child: Icon(Icons.broken_image, color: Colors.white54),
+                          child: Center(
+                            child:
+                                Icon(Icons.broken_image, color: Colors.white54),
                           ),
                         );
                       },
@@ -882,8 +846,6 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
 
   List<Widget> _buildControlPoints(
       double offsetX, double offsetY, double scaleX, double scaleY) {
-    final pointLabels = ['TL', 'TR', 'BR', 'BL'];
-
     return List.generate(cropPoints.length, (index) {
       final point = cropPoints[index];
       final screenPos = Offset(
@@ -929,7 +891,7 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.primaryBlue.withOpacity(0.3),
+                          color: AppColors.primaryBlue.withValues(alpha: 0.3),
                           width: 2,
                         ),
                       ),
@@ -940,7 +902,7 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
                     height: isSelected ? 42 : 36,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.25),
+                      color: Colors.white.withValues(alpha: 0.25),
                     ),
                   ),
                   // Main control point
@@ -956,13 +918,13 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           blurRadius: isSelected ? 12 : 8,
                           spreadRadius: isSelected ? 2 : 1,
                         ),
                         BoxShadow(
-                          color: AppColors.primaryBlue.withOpacity(
-                            isSelected ? 0.7 : 0.4,
+                          color: AppColors.primaryBlue.withValues(
+                            alpha: isSelected ? 0.7 : 0.4,
                           ),
                           blurRadius: isSelected ? 16 : 10,
                           spreadRadius: isSelected ? 3 : 2,
@@ -985,7 +947,7 @@ class _PerspectiveCropWidgetState extends State<PerspectiveCropWidget> {
                     CustomPaint(
                       size: Size(28, 28),
                       painter: CornerIndicatorPainter(
-                        color: AppColors.primaryBlue.withOpacity(0.6),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.6),
                       ),
                     ),
                 ],
@@ -1042,7 +1004,7 @@ class PerspectiveCropPainter extends CustomPainter {
           Path()
             ..addRect(Rect.fromLTWH(0, 0, displayWidth, displayHeight))
             ..addPolygon(cropQuad, true),
-          Paint()..color = Colors.black.withOpacity(0.5),
+          Paint()..color = Colors.black.withValues(alpha: 0.5),
         );
       } catch (e) {
         print('Overlay drawing error: $e');
@@ -1067,7 +1029,7 @@ class PerspectiveCropPainter extends CustomPainter {
         canvas.drawPath(
           cropPath,
           Paint()
-            ..color = Colors.black.withOpacity(0.8)
+            ..color = Colors.black.withValues(alpha: 0.8)
             ..strokeWidth = 4
             ..style = PaintingStyle.stroke,
         );
@@ -1097,7 +1059,7 @@ class PerspectiveCropPainter extends CustomPainter {
 
   void _drawGridLines(Canvas canvas, double scaleX, double scaleY) {
     final gridPaint = Paint()
-      ..color = Colors.white.withOpacity(0.25)
+      ..color = Colors.white.withValues(alpha: 0.25)
       ..strokeWidth = 1.5;
 
     final tl = Offset(cropPoints[0].dx * scaleX, cropPoints[0].dy * scaleY);

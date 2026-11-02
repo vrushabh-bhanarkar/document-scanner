@@ -74,7 +74,7 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
-  static const LinearGradient HeroSectionGradient = LinearGradient(
+  static const LinearGradient heroSectionGradient = LinearGradient(
     colors: [
       Color.fromARGB(255, 132, 158, 202),
       Color.fromARGB(255, 82, 86, 95)
@@ -384,7 +384,7 @@ class AppThemes {
       tertiary: AppColors.purple,
       tertiaryContainer: AppColors.purpleLight,
       surface: AppColors.surface,
-      surfaceVariant: AppColors.surfaceVariant,
+      surfaceContainerHighest: AppColors.surfaceVariant,
       error: AppColors.error,
       onPrimary: Colors.white,
       onPrimaryContainer: AppColors.primaryBlueDark,
@@ -419,7 +419,7 @@ class AppThemes {
         backgroundColor: AppColors.primaryBlue,
         foregroundColor: Colors.white,
         elevation: 2,
-        shadowColor: AppColors.primaryBlue.withOpacity(0.3),
+        shadowColor: AppColors.primaryBlue.withValues(alpha: 0.3),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -454,7 +454,7 @@ class AppThemes {
         borderRadius: BorderRadius.circular(16),
       ),
       color: AppColors.surface,
-      shadowColor: Colors.black.withOpacity(0.08),
+      shadowColor: Colors.black.withValues(alpha: 0.08),
     ),
 
     // Input Decoration Theme
@@ -576,15 +576,15 @@ class AppElevations {
 class AppGlassMorphism {
   static BoxDecoration light({double blur = 10, Color? color}) {
     return BoxDecoration(
-      color: (color ?? Colors.white).withOpacity(0.7),
+      color: (color ?? Colors.white).withValues(alpha: 0.7),
       borderRadius: BorderRadius.circular(20),
       border: Border.all(
-        color: Colors.white.withOpacity(0.3),
+        color: Colors.white.withValues(alpha: 0.3),
         width: 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withValues(alpha: 0.05),
           blurRadius: 15,
           offset: const Offset(0, 8),
         ),
@@ -594,15 +594,15 @@ class AppGlassMorphism {
 
   static BoxDecoration dark({double blur = 10}) {
     return BoxDecoration(
-      color: Colors.black.withOpacity(0.3),
+      color: Colors.black.withValues(alpha: 0.3),
       borderRadius: BorderRadius.circular(20),
       border: Border.all(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         width: 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
+          color: Colors.black.withValues(alpha: 0.2),
           blurRadius: 15,
           offset: const Offset(0, 8),
         ),

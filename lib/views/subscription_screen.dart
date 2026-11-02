@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 
 import '../core/themes.dart';
 import '../providers/subscription_provider.dart';
+import 'paywall.dart';
 
 class SubscriptionScreen extends StatefulWidget {
-  const SubscriptionScreen({Key? key}) : super(key: key);
+  const SubscriptionScreen({super.key});
 
   @override
   State<SubscriptionScreen> createState() => _SubscriptionScreenState();
@@ -39,7 +40,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                _StatusCard(isSubscribed: isSubscribed, lastPayment: sub.lastPaymentDate),
+                _StatusCard(
+                    isSubscribed: isSubscribed,
+                    lastPayment: sub.lastPaymentDate),
                 _AccountCard(
                   controller: _emailController,
                   provider: sub,
@@ -47,35 +50,64 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 ),
                 const _BenefitsList(),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       if (!isSubscribed)
-                        _PaymentButton(provider: sub, isProcessing: isProcessing)
-                      else
+                        _PaymentButton(
+                            provider: sub, isProcessing: isProcessing)
+                      else ...[
                         const _ActiveBadge(),
+                        SizedBox(height: 12.h),
+                        ElevatedButton.icon(
+                          onPressed: isProcessing
+                              ? null
+                              : () => sub.presentCustomerCenter(),
+                          icon: const Icon(Icons.manage_accounts_outlined),
+                          label: const Text('Manage Subscription (Customer Center)'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20.w, vertical: 14.h),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.r)),
+                          ),
+                        ),
+                      ],
                       SizedBox(height: 12.h),
                       OutlinedButton(
                         onPressed: isProcessing
                             ? null
                             : () async {
-                                await sub.load();
+                                final restored = await sub.restorePurchases();
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Restored subscription status.')),
+                                    SnackBar(
+                                      content: Text(restored
+                                          ? '✅ Purchases restored successfully!'
+                                          : 'No active subscriptions found to restore.'),
+                                    ),
                                   );
                                 }
                               },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.primaryBlue,
-                          side: BorderSide(color: AppColors.primaryBlue, width: 2),
-                          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 14.h),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+                          side: BorderSide(
+                              color: AppColors.primaryBlue, width: 2),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24.w, vertical: 14.h),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.r)),
                         ),
                         child: Text(
                           'Restore Purchase',
-                          style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700, letterSpacing: -0.3),
+                          style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.3),
                         ),
                       ),
                     ],
@@ -87,13 +119,20 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     children: [
                       Text(
                         'Questions? Contact Support',
-                        style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w600, color: AppColors.primaryBlue),
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryBlue),
                       ),
                       SizedBox(height: 8.h),
                       Text(
                         'Your subscription supports continuous app development and new features',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w500, color: AppColors.gray600, height: 1.5),
+                        style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.gray600,
+                            height: 1.5),
                       ),
                     ],
                   ),
@@ -116,7 +155,8 @@ class _StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusText = isSubscribed ? 'Subscription Active' : 'Subscription Inactive';
+    final statusText =
+        isSubscribed ? 'Subscription Active' : 'Subscription Inactive';
     final statusColor = isSubscribed ? AppColors.success : AppColors.gray600;
     final lastPaymentText = lastPayment != null
         ? 'Last payment on ${lastPayment!.toLocal().toString().split(' ').first}'
@@ -131,7 +171,7 @@ class _StatusCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -143,7 +183,7 @@ class _StatusCard extends StatelessWidget {
             height: 54.r,
             width: 54.r,
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.12),
+              color: statusColor.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(16.r),
             ),
             child: Icon(
@@ -159,12 +199,18 @@ class _StatusCard extends StatelessWidget {
               children: [
                 Text(
                   statusText,
-                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w800, color: AppColors.gray900),
+                  style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.gray900),
                 ),
                 SizedBox(height: 6.h),
                 Text(
                   lastPaymentText,
-                  style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500, color: AppColors.gray600),
+                  style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.gray600),
                 ),
               ],
             ),
@@ -204,7 +250,10 @@ class _AccountCard extends StatelessWidget {
         children: [
           Text(
             'Account',
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700, color: AppColors.gray900),
+            style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.gray900),
           ),
           SizedBox(height: 10.h),
           if (loggedInEmail != null) ...[
@@ -215,7 +264,10 @@ class _AccountCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     loggedInEmail,
-                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: AppColors.gray900),
+                    style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.gray900),
                   ),
                 ),
                 TextButton(
@@ -238,7 +290,8 @@ class _AccountCard extends StatelessWidget {
               decoration: InputDecoration(
                 labelText: 'Email address',
                 hintText: 'you@example.com',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.r)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r)),
               ),
             ),
             SizedBox(height: 10.h),
@@ -251,7 +304,9 @@ class _AccountCard extends StatelessWidget {
                         final email = controller.text.trim();
                         if (email.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please enter an email to log in.')),
+                            const SnackBar(
+                                content:
+                                    Text('Please enter an email to log in.')),
                           );
                           return;
                         }
@@ -264,14 +319,17 @@ class _AccountCard extends StatelessWidget {
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
-                  padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 18.w, vertical: 12.h),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r)),
                 ),
                 child: isProcessing
                     ? SizedBox(
                         height: 18.r,
                         width: 18.r,
-                        child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: const CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Text('Log in'),
               ),
@@ -309,7 +367,10 @@ class _BenefitsList extends StatelessWidget {
         children: [
           Text(
             'Why go Premium?',
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w700, color: AppColors.gray900),
+            style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+                color: AppColors.gray900),
           ),
           SizedBox(height: 12.h),
           ...benefits.map(
@@ -318,12 +379,17 @@ class _BenefitsList extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.check_circle, color: AppColors.success, size: 20.r),
+                  Icon(Icons.check_circle,
+                      color: AppColors.success, size: 20.r),
                   SizedBox(width: 10.w),
                   Expanded(
                     child: Text(
                       benefit,
-                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: AppColors.gray800, height: 1.4),
+                      style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.gray800,
+                          height: 1.4),
                     ),
                   ),
                 ],
@@ -348,35 +414,42 @@ class _PaymentButton extends StatelessWidget {
       onPressed: isProcessing
           ? null
           : () async {
-              await provider.payAndSubscribe();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Subscription activated. Thank you!')),
-                );
-              }
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PaywallScreen(autoPresentRevenueCatPaywall: true),
+                ),
+              );
             },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryBlue,
         padding: EdgeInsets.symmetric(vertical: 16.h),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.r)),
         elevation: 2,
       ),
       child: isProcessing
           ? SizedBox(
               height: 20.r,
               width: 20.r,
-              child: const CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              child: const CircularProgressIndicator(
+                  strokeWidth: 2, color: Colors.white),
             )
           : Column(
               children: [
                 Text(
-                  'Subscribe for \$4.99 / month',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w800, color: Colors.white),
+                  'Upgrade to Void Version Pro',
+                  style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white),
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'Cancel anytime. Secure payment.',
-                  style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: Colors.white.withOpacity(0.9)),
+                  'Yearly, Monthly & Lifetime available',
+                  style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white.withValues(alpha: 0.9)),
                 ),
               ],
             ),
@@ -392,7 +465,7 @@ class _ActiveBadge extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 14.h),
       decoration: BoxDecoration(
-        color: AppColors.success.withOpacity(0.12),
+        color: AppColors.success.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(14.r),
         border: Border.all(color: AppColors.success),
       ),
@@ -403,7 +476,10 @@ class _ActiveBadge extends StatelessWidget {
           SizedBox(width: 8.w),
           Text(
             'You are a premium member',
-            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w800, color: AppColors.success),
+            style: TextStyle(
+                fontSize: 15.sp,
+                fontWeight: FontWeight.w800,
+                color: AppColors.success),
           ),
         ],
       ),

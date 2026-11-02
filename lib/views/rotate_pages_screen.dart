@@ -9,7 +9,7 @@ import '../widgets/native_ad_widget.dart';
 class RotatePagesScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const RotatePagesScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const RotatePagesScreen({super.key, this.initialPdfFile});
 
   @override
   State<RotatePagesScreen> createState() => _RotatePagesScreenState();
@@ -80,7 +80,7 @@ class _RotatePagesScreenState extends State<RotatePagesScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.purple.withOpacity(0.1),
+                color: Colors.purple.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -149,7 +149,7 @@ class _RotatePagesScreenState extends State<RotatePagesScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -199,7 +199,7 @@ class _RotatePagesScreenState extends State<RotatePagesScreen> {
               borderRadius: BorderRadius.circular(12.r),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   spreadRadius: 1,
                   blurRadius: 4,
                   offset: const Offset(0, 2),
@@ -248,7 +248,7 @@ class _RotatePagesScreenState extends State<RotatePagesScreen> {
                 borderRadius: BorderRadius.circular(12.r),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     spreadRadius: 1,
                     blurRadius: 4,
                     offset: const Offset(0, 2),
@@ -285,22 +285,22 @@ class _RotatePagesScreenState extends State<RotatePagesScreen> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _selectAllPages,
-                          child: const Text('Select All'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.purple.shade100,
                             foregroundColor: Colors.purple,
                           ),
+                          child: const Text('Select All'),
                         ),
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: _clearSelection,
-                          child: const Text('Clear All'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey.shade100,
                             foregroundColor: Colors.grey.shade700,
                           ),
+                          child: const Text('Clear All'),
                         ),
                       ),
                     ],

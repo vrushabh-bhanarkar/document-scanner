@@ -9,7 +9,7 @@ import '../widgets/native_ad_widget.dart';
 class RemovePasswordScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const RemovePasswordScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const RemovePasswordScreen({super.key, this.initialPdfFile});
 
   @override
   State<RemovePasswordScreen> createState() => _RemovePasswordScreenState();
@@ -73,7 +73,7 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
                   borderRadius: BorderRadius.circular(20.r),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFF59E0B).withOpacity(0.3),
+                      color: const Color(0xFFF59E0B).withValues(alpha: 0.3),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -84,7 +84,7 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
                     Container(
                       padding: EdgeInsets.all(16.w),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16.r),
                       ),
                       child: Icon(Icons.lock_open,
@@ -108,7 +108,7 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
                             'Unlock and access your PDF',
                             style: TextStyle(
                               fontSize: 13.sp,
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                             ),
                           ),
                         ],
@@ -137,7 +137,7 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
                     borderRadius: BorderRadius.circular(16.r),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.08),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -227,11 +227,11 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       disabledBackgroundColor: Colors.grey[400],
-                      elevation: (_passwordController.text.isNotEmpty &&
-                              !isProcessing)
-                          ? 10
-                          : 0,
-                      shadowColor: Colors.orange.withOpacity(0.4),
+                      elevation:
+                          (_passwordController.text.isNotEmpty && !isProcessing)
+                              ? 10
+                              : 0,
+                      shadowColor: Colors.orange.withValues(alpha: 0.4),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.r),
                       ),
@@ -289,12 +289,12 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16.r),
           border: Border.all(
-            color: Colors.orange.withOpacity(0.3),
+            color: Colors.orange.withValues(alpha: 0.3),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -305,7 +305,7 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
             Container(
               padding: EdgeInsets.all(24.w),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.15),
+                color: Colors.orange.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Icon(
@@ -345,10 +345,10 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: Colors.orange.withOpacity(0.2)),
+        border: Border.all(color: Colors.orange.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -359,11 +359,10 @@ class _RemovePasswordScreenState extends State<RemovePasswordScreen> {
           Container(
             padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(Icons.picture_as_pdf,
-                color: Colors.red, size: 32.sp),
+            child: Icon(Icons.picture_as_pdf, color: Colors.red, size: 32.sp),
           ),
           SizedBox(width: 16.w),
           Expanded(

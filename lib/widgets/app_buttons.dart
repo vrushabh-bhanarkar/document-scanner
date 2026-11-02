@@ -11,14 +11,14 @@ class AppPrimaryButton extends StatelessWidget {
   final EdgeInsets? padding;
 
   const AppPrimaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.isLoading = false,
     this.icon,
     this.width,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class AppPrimaryButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.white.withOpacity(0.8),
+                    Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
               )
@@ -43,7 +43,7 @@ class AppPrimaryButton extends StatelessWidget {
           backgroundColor: AppColors.primaryBlue,
           foregroundColor: Colors.white,
           elevation: 3,
-          shadowColor: AppColors.primaryBlue.withOpacity(0.4),
+          shadowColor: AppColors.primaryBlue.withValues(alpha: 0.4),
           padding: padding ??
               const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           shape: RoundedRectangleBorder(
@@ -67,14 +67,14 @@ class AppSecondaryButton extends StatelessWidget {
   final Color? color;
 
   const AppSecondaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.icon,
     this.width,
     this.padding,
     this.color,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -111,14 +111,14 @@ class AppTertiaryButton extends StatelessWidget {
   final Color? backgroundColor;
 
   const AppTertiaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.icon,
     this.width,
     this.padding,
     this.backgroundColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -151,13 +151,13 @@ class AppIconButton extends StatelessWidget {
   final double size;
 
   const AppIconButton({
-    Key? key,
+    super.key,
     required this.icon,
     required this.onPressed,
     this.backgroundColor,
     this.iconColor,
     this.size = 48,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -196,13 +196,13 @@ class AppMiniButton extends StatelessWidget {
   final Color? textColor;
 
   const AppMiniButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.icon,
     this.backgroundColor,
     this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

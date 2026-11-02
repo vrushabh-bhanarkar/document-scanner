@@ -1,5 +1,6 @@
 /// App Configuration for PDF ScanPro
 /// This file contains all app-wide constants and configuration
+library;
 
 class AppConfig {
   // App Info

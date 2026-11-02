@@ -10,7 +10,7 @@ import '../widgets/native_ad_widget.dart';
 class SplitPdfScreen extends StatefulWidget {
   final File pdfFile;
 
-  const SplitPdfScreen({Key? key, required this.pdfFile}) : super(key: key);
+  const SplitPdfScreen({super.key, required this.pdfFile});
 
   @override
   State<SplitPdfScreen> createState() => _SplitPdfScreenState();
@@ -112,7 +112,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
                                 '$totalPages pages • ${widget.pdfFile.path.split('/').last}',
                                 style: TextStyle(
                                   fontSize: 14.sp,
-                                  color: Colors.white.withOpacity(0.9),
+                                  color: Colors.white.withValues(alpha: 0.9),
                                 ),
                               ),
                             ],
@@ -130,7 +130,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
                       borderRadius: BorderRadius.circular(12.r),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withValues(alpha: 0.1),
                           spreadRadius: 1,
                           blurRadius: 4,
                           offset: const Offset(0, 2),
@@ -275,7 +275,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -403,7 +403,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -502,7 +502,7 @@ class _SplitPdfScreenState extends State<SplitPdfScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -690,10 +690,10 @@ class SplitPdfResultsScreen extends StatefulWidget {
   final FileManagementService fileService;
 
   const SplitPdfResultsScreen({
-    Key? key,
+    super.key,
     required this.splitFiles,
     required this.fileService,
-  }) : super(key: key);
+  });
 
   @override
   State<SplitPdfResultsScreen> createState() => _SplitPdfResultsScreenState();
@@ -1087,9 +1087,11 @@ class _SplitPdfResultsScreenState extends State<SplitPdfResultsScreen> {
 
   Future<void> _shareCurrentFile() async {
     try {
-      await Share.shareXFiles(
-        [XFile(widget.splitFiles[_currentIndex].path)],
-        subject: 'Split PDF ${_currentIndex + 1}',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(widget.splitFiles[_currentIndex].path)],
+          subject: 'Split PDF ${_currentIndex + 1}',
+        ),
       );
     } catch (e) {
       if (mounted) {
@@ -1105,9 +1107,11 @@ class _SplitPdfResultsScreenState extends State<SplitPdfResultsScreen> {
 
   Future<void> _shareAllFiles() async {
     try {
-      await Share.shareXFiles(
-        widget.splitFiles.map((file) => XFile(file.path)).toList(),
-        subject: 'Split PDF Files (${widget.splitFiles.length} files)',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: widget.splitFiles.map((file) => XFile(file.path)).toList(),
+          subject: 'Split PDF Files (${widget.splitFiles.length} files)',
+        ),
       );
     } catch (e) {
       if (mounted) {

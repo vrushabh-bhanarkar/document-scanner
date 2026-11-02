@@ -4,11 +4,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../models/document_model.dart';
-import 'package:camera/camera.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:app_settings/app_settings.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 import '../services/scan_quota_service.dart';
 
@@ -31,9 +28,6 @@ class DocumentProvider extends ChangeNotifier {
   // Multi-page scanning
   List<String> _currentPages = [];
   List<String> get currentPages => _currentPages;
-
-  late CameraController _cameraController;
-  bool _isCameraInitialized = false;
 
   DocumentProvider();
 
@@ -104,7 +98,8 @@ class DocumentProvider extends ChangeNotifier {
     final quota = ScanQuotaService();
     final allowed = await quota.canCreateDocument();
     if (!allowed) {
-      throw StateError('Free scan limit reached. Please subscribe to continue scanning.');
+      throw StateError(
+          'Free scan limit reached. Please subscribe to continue scanning.');
     }
 
     final id = const Uuid().v4();
@@ -216,10 +211,10 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> _scanFile(String path) async {
-    const MethodChannel _channel =
+    const MethodChannel channel =
         MethodChannel('document_scanner/media_scanner');
     try {
-      await _channel.invokeMethod('scanFile', {'path': path});
+      await channel.invokeMethod('scanFile', {'path': path});
     } catch (e) {
       print('Error scanning file: $e');
     }
@@ -265,9 +260,9 @@ class DocumentProvider extends ChangeNotifier {
       print('saveToGallery: File copied, exists: ${await copied.exists()}');
 
       // Notify media scanner
-      const MethodChannel _channel =
+      const MethodChannel channel =
           MethodChannel('document_scanner/media_scanner');
-      await _channel.invokeMethod('scanFile', {'path': savedPath});
+      await channel.invokeMethod('scanFile', {'path': savedPath});
       print('saveToGallery: Media scanner notified for $savedPath');
 
       return true;
@@ -293,9 +288,9 @@ class DocumentProvider extends ChangeNotifier {
       await file.copy(savedPath);
 
       // Optionally notify media scanner
-      const MethodChannel _channel =
+      const MethodChannel channel =
           MethodChannel('document_scanner/media_scanner');
-      await _channel.invokeMethod('scanFile', {'path': savedPath});
+      await channel.invokeMethod('scanFile', {'path': savedPath});
 
       return true;
     } catch (e) {
@@ -360,11 +355,9 @@ class DocumentProvider extends ChangeNotifier {
       }
       String fileName = file.path.split('/').last;
       String savedPath = '${galleryDir.path}/$fileName';
-      File copied = await file.copy(savedPath);
+      await file.copy(savedPath);
       // Notify media scanner
-      const MethodChannel _channel =
-          MethodChannel('document_scanner/media_scanner');
-      await _channel.invokeMethod('scanFile', {'path': savedPath});
+      await _scanFile(savedPath);
       // Add to recent documents
       await addToRecentDownloads(savedPath);
       print('saveImageAndRegister: Image saved and registered at $savedPath');
@@ -397,11 +390,9 @@ class DocumentProvider extends ChangeNotifier {
       }
       String fileName = file.path.split('/').last;
       String savedPath = '${downloadsDir.path}/$fileName';
-      File copied = await file.copy(savedPath);
+      await file.copy(savedPath);
       // Notify media scanner
-      const MethodChannel _channel =
-          MethodChannel('document_scanner/media_scanner');
-      await _channel.invokeMethod('scanFile', {'path': savedPath});
+      await _scanFile(savedPath);
       // Add to recent documents
       await addToRecentDownloads(savedPath);
       print('savePdfAndRegister: PDF saved and registered at $savedPath');

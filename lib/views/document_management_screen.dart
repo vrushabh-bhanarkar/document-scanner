@@ -4,7 +4,7 @@ import '../widgets/app_buttons.dart';
 import '../widgets/native_ad_widget.dart';
 
 class DocumentManagementScreen extends StatefulWidget {
-  const DocumentManagementScreen({Key? key}) : super(key: key);
+  const DocumentManagementScreen({super.key});
 
   @override
   State<DocumentManagementScreen> createState() =>
@@ -49,7 +49,7 @@ class _DocumentManagementScreenState extends State<DocumentManagementScreen> {
                 });
               },
               backgroundColor: _isReorderMode
-                  ? AppColors.emerald.withOpacity(0.1)
+                  ? AppColors.emerald.withValues(alpha: 0.1)
                   : AppColors.primaryBlueExtraLight,
               textColor:
                   _isReorderMode ? AppColors.emerald : AppColors.primaryBlue,
@@ -257,7 +257,7 @@ class _DocumentManagementScreenState extends State<DocumentManagementScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    color: Colors.black.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
@@ -317,7 +317,7 @@ class ReorderableGridView extends StatelessWidget {
   final Function(int oldIndex, int newIndex) onReorder;
 
   const ReorderableGridView.count({
-    Key? key,
+    super.key,
     required this.crossAxisCount,
     required this.crossAxisSpacing,
     required this.mainAxisSpacing,
@@ -325,7 +325,7 @@ class ReorderableGridView extends StatelessWidget {
     required this.children,
     required this.onReorder,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

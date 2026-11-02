@@ -9,7 +9,6 @@ import '../services/file_management_service.dart';
 import '../services/notification_service.dart';
 import '../providers/document_provider.dart';
 import '../models/document_model.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:async';
@@ -17,7 +16,6 @@ import 'pdf_viewer_screen.dart';
 import '../widgets/interstitial_ad_helper.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
-import '../widgets/native_ad_widget.dart';
 import '../widgets/modern_ui_components.dart';
 
 class ImageToPdfScreen extends StatefulWidget {
@@ -31,11 +29,8 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
     with TickerProviderStateMixin {
   final List<File> _selectedImages = [];
   final ImagePicker _picker = ImagePicker();
-  final PDFService _pdfService = PDFService();
 
   late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
 
   bool _isProcessing = false;
   String _pdfTitle = '';
@@ -45,8 +40,6 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
   bool _addPageNumbers = false;
   String? _watermarkText;
   bool _showLoadingOverlay = false;
-  final GlobalKey<AnimatedListState> _imageListKey =
-      GlobalKey<AnimatedListState>();
 
   // New for success preview
   File? _generatedPDF;
@@ -61,24 +54,8 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.elasticOut,
-    ));
-
     _animationController.forward();
-    
+
     // Preload interstitial ad for smooth experience
     Future.delayed(const Duration(milliseconds: 500), () {
       InterstitialAdHelper.preloadAd();
@@ -108,18 +85,17 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
             if (await sourceFile.exists()) {
               // Read the image bytes to ensure it's accessible
               final bytes = await sourceFile.readAsBytes();
-              
+
               // Copy to app's cache directory with a permanent name
               final cacheDir = await getApplicationCacheDirectory();
               final timestamp = DateTime.now().millisecondsSinceEpoch;
               final persistentFile = File(
-                '${cacheDir.path}/selected_image_$timestamp${xFile.path.replaceAll(RegExp(r'.*\.'), '.')}'
-              );
-              
+                  '${cacheDir.path}/selected_image_$timestamp${xFile.path.replaceAll(RegExp(r'.*\.'), '.')}');
+
               // Write bytes to new location
               await persistentFile.writeAsBytes(bytes);
               persistentImages.add(persistentFile);
-              
+
               print('ImageToPdfScreen: Copied image to ${persistentFile.path}');
             }
           } catch (e) {
@@ -148,16 +124,6 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
     });
   }
 
-  void _reorderImages(int oldIndex, int newIndex) {
-    setState(() {
-      if (newIndex > oldIndex) {
-        newIndex -= 1;
-      }
-      final item = _selectedImages.removeAt(oldIndex);
-      _selectedImages.insert(newIndex, item);
-    });
-  }
-
   void _clearAllImages() {
     setState(() {
       _selectedImages.clear();
@@ -172,7 +138,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
             Container(
               padding: EdgeInsets.all(6.w),
               decoration: BoxDecoration(
-                color: AppColors.errorLight.withOpacity(0.3),
+                color: AppColors.errorLight.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(
@@ -214,7 +180,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
             Container(
               padding: EdgeInsets.all(6.w),
               decoration: BoxDecoration(
-                color: AppColors.successLight.withOpacity(0.3),
+                color: AppColors.successLight.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8.r),
               ),
               child: Icon(
@@ -306,8 +272,9 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
       print('ImageToPdfScreen: PDF generation completed. File: ${file?.path}');
 
       if (file != null && await file.exists()) {
-        print('ImageToPdfScreen: PDF file exists, size: ${await file.length()} bytes');
-        
+        print(
+            'ImageToPdfScreen: PDF file exists, size: ${await file.length()} bytes');
+
         final documentProvider =
             Provider.of<DocumentProvider>(context, listen: false);
         await documentProvider.createDocument(
@@ -398,7 +365,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                         fontWeight: FontWeight.w700)),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.error,
-                  backgroundColor: AppColors.error.withOpacity(0.1),
+                  backgroundColor: AppColors.error.withValues(alpha: 0.1),
                   padding:
                       EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                   shape: RoundedRectangleBorder(
@@ -436,7 +403,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                     borderRadius: BorderRadius.circular(16.r),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primaryBlue.withOpacity(0.12),
+                        color: AppColors.primaryBlue.withValues(alpha: 0.12),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -495,7 +462,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                           onTap: () => _removeImage(index),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.6),
+                              color: Colors.black.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(20.r),
                             ),
                             padding: EdgeInsets.all(4.w),
@@ -509,7 +476,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                         left: 6.w,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.85),
+                            color: Colors.white.withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(12.r),
                           ),
                           padding: EdgeInsets.symmetric(
@@ -528,7 +495,8 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                           index: index,
                           child: Container(
                             decoration: BoxDecoration(
-                              color: AppColors.primaryBlue.withOpacity(0.8),
+                              color:
+                                  AppColors.primaryBlue.withValues(alpha: 0.8),
                               borderRadius: BorderRadius.circular(12.r),
                             ),
                             padding: EdgeInsets.all(4.w),
@@ -559,12 +527,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
       builder: (context, child) {
         final theme = Theme.of(context);
         final isDark = theme.brightness == Brightness.dark;
-        final screenWidth = MediaQuery.of(context).size.width;
-        final cardColor = isDark ? AppColors.surface : Colors.white;
         final textColor = isDark ? AppColors.gray900 : AppColors.gray900;
-        final subtitleColor = isDark ? AppColors.gray300 : AppColors.gray600;
-        final borderColor = isDark ? AppColors.gray700 : AppColors.gray200;
-        final iconBgColor = isDark ? AppColors.gray800 : AppColors.gray100;
 
         return Stack(
           children: [
@@ -621,13 +584,13 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                AppColors.emerald.withOpacity(0.15),
-                                AppColors.emerald.withOpacity(0.05),
+                                AppColors.emerald.withValues(alpha: 0.15),
+                                AppColors.emerald.withValues(alpha: 0.05),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(20.r),
                             border: Border.all(
-                              color: AppColors.emerald.withOpacity(0.3),
+                              color: AppColors.emerald.withValues(alpha: 0.3),
                               width: 1.5,
                             ),
                           ),
@@ -693,7 +656,8 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                       // Main Card
                       ModernCard(
                         padding: EdgeInsets.all(24.w),
-                        borderColor: AppColors.primaryBlue.withOpacity(0.15),
+                        borderColor:
+                            AppColors.primaryBlue.withValues(alpha: 0.15),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -743,7 +707,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                                     borderRadius: BorderRadius.circular(14.r),
                                     borderSide: BorderSide(
                                         color: AppColors.primaryBlue
-                                            .withOpacity(0.5),
+                                            .withValues(alpha: 0.5),
                                         width: 1.5.w),
                                   ),
                                   enabledBorder: OutlineInputBorder(
@@ -764,9 +728,9 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                                       gradient: LinearGradient(
                                         colors: [
                                           AppColors.primaryBlue
-                                              .withOpacity(0.15),
+                                              .withValues(alpha: 0.15),
                                           AppColors.primaryBlue
-                                              .withOpacity(0.05),
+                                              .withValues(alpha: 0.05),
                                         ],
                                       ),
                                       borderRadius: BorderRadius.circular(10.r),
@@ -816,7 +780,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                                           filled: true,
                                           fillColor: AppColors.gray50,
                                         ),
-                                        value: _selectedPageSize,
+                                        initialValue: _selectedPageSize,
                                         items: PageSize.values.map((size) {
                                           return DropdownMenuItem(
                                             value: size,
@@ -848,7 +812,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                                       });
                                     },
                                     contentPadding: EdgeInsets.zero,
-                                    activeColor: AppColors.primaryBlue,
+                                    activeThumbColor: AppColors.primaryBlue,
                                   ),
                                 ],
                               ),
@@ -864,7 +828,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                                   });
                                 },
                                 contentPadding: EdgeInsets.zero,
-                                activeColor: AppColors.primaryBlue,
+                                activeThumbColor: AppColors.primaryBlue,
                               ),
                               SizedBox(height: 12.h),
                               TextField(
@@ -875,14 +839,14 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                                     borderRadius: BorderRadius.circular(12.r),
                                     borderSide: BorderSide(
                                         color: AppColors.primaryBlue
-                                            .withOpacity(0.7),
+                                            .withValues(alpha: 0.7),
                                         width: 2.w),
                                   ),
                                   enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(12.r),
                                     borderSide: BorderSide(
                                         color: AppColors.primaryBlue
-                                            .withOpacity(0.7),
+                                            .withValues(alpha: 0.7),
                                         width: 2.w),
                                   ),
                                   focusedBorder: OutlineInputBorder(
@@ -925,10 +889,10 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(25 * scale),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1 * scale,
         ),
       ),
@@ -1326,7 +1290,6 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
   //   );
   // }
 
-
   Widget _buildPDFSuccessPreview() {
     final screenWidth = MediaQuery.of(context).size.width;
     final scale = screenWidth / 375.0;
@@ -1381,13 +1344,13 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-                  Theme.of(context).primaryColor.withOpacity(0.05),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(25),
               border: Border.all(
-                color: Theme.of(context).primaryColor.withOpacity(0.3),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -1445,540 +1408,545 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.3),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  children: [
-                    // Decorative circles
-                    Positioned(
-                      right: -20,
-                      top: -20,
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
-                        ),
+                        color: Colors.green.withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
-                    ),
-                    Positioned(
-                      left: -30,
-                      bottom: -30,
-                      child: Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
-                        ),
-                      ),
-                    ),
-                    // Content
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(50),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.check_circle,
-                              color: Colors.green.shade600,
-                              size: 32,
-                            ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      // Decorative circles
+                      Positioned(
+                        right: -20,
+                        top: -20,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'PDF Created Successfully!',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                    letterSpacing: -0.5,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'} \u2022 ${_selectedPageSize.name.toUpperCase()}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        ),
+                      ),
+                      Positioned(
+                        left: -30,
+                        bottom: -30,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.white.withValues(alpha: 0.1),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Enhanced PDF Info Card with Image Thumbnails & Modern Design
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 30,
-                      offset: const Offset(0, 10),
-                      spreadRadius: -5,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    // PDF Header with Title
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            const Color(0xFFF8FAFC),
-                            Colors.grey.shade50,
-                          ],
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          topRight: Radius.circular(24),
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Theme.of(context).primaryColor,
-                                  Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.8),
+                      // Content
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(50),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
                                 ],
                               ),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Theme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.3),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
+                              child: Icon(
+                                Icons.check_circle,
+                                color: Colors.green.shade600,
+                                size: 32,
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.picture_as_pdf_rounded,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _pdfTitle,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 18,
-                                    color: Color(0xFF1E293B),
-                                    letterSpacing: -0.5,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 5,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .primaryColor
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(
-                                      color: Theme.of(context)
-                                          .primaryColor
-                                          .withOpacity(0.2),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'PDF Document',
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'PDF Created Successfully!',
                                     style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: -0.5,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Thumbnail Preview Section
-                    if (_selectedImages.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blue.shade50,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    Icons.photo_library_rounded,
-                                    size: 18,
-                                    color: Colors.blue.shade700,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Page Preview',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.grey.shade800,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.1),
-                                        Theme.of(context)
-                                            .primaryColor
-                                            .withOpacity(0.05),
-                                      ],
-                                    ),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: TextButton.icon(
-                                    onPressed: _viewPDF,
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size.zero,
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    icon: Icon(
-                                      Icons.fullscreen_rounded,
-                                      size: 16,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    label: Text(
-                                      'View Full',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'} \u2022 ${_selectedPageSize.name.toUpperCase()}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color:
+                                          Colors.white.withValues(alpha: 0.9),
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              height: 110,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                itemCount: _selectedImages.length > 5
-                                    ? 5
-                                    : _selectedImages.length,
-                                itemBuilder: (context, index) {
-                                  return Container(
-                                    margin: const EdgeInsets.only(right: 12),
-                                    child: Stack(
-                                      children: [
-                                        Container(
-                                          width: 80,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(14),
-                                            border: Border.all(
-                                              color: Theme.of(context)
-                                                  .primaryColor
-                                                  .withOpacity(0.3),
-                                              width: 2.5,
-                                            ),
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.15),
-                                                blurRadius: 10,
-                                                offset: const Offset(0, 4),
-                                              ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                            child: Image.file(
-                                              _selectedImages[index],
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          bottom: 6,
-                                          left: 6,
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                colors: [
-                                                  Colors.black.withOpacity(0.8),
-                                                  Colors.black.withOpacity(0.6),
-                                                ],
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              border: Border.all(
-                                                color: Colors.white
-                                                    .withOpacity(0.3),
-                                                width: 1,
-                                              ),
-                                            ),
-                                            child: Text(
-                                              '${index + 1}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
+                                ],
                               ),
                             ),
-                            if (_selectedImages.length > 5)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.info_outline_rounded,
-                                      size: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '+${_selectedImages.length - 5} more page${_selectedImages.length - 5 == 1 ? '' : 's'}',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey.shade600,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                           ],
                         ),
-                      ),
-
-                    // Divider
-                    Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.grey.shade200,
-                    ),
-
-                    // File Details with Icons
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          _buildDetailRow(
-                            Icons.description_rounded,
-                            'Total Pages',
-                            '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'}',
-                          ),
-                          const SizedBox(height: 14),
-                          _buildDetailRow(
-                            Icons.crop_square_rounded,
-                            'Page Size',
-                            _selectedPageSize.name.toUpperCase(),
-                          ),
-                          const SizedBox(height: 14),
-                          FutureBuilder<String>(
-                            future: _getPDFFileSize(),
-                            builder: (context, snapshot) {
-                              return _buildDetailRow(
-                                Icons.storage_rounded,
-                                'File Size',
-                                snapshot.data ?? 'Calculating...',
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 24.h),
-
-              // Compact Action Buttons
-              SafeArea(
-                child: Container(
-                  margin: EdgeInsets.all(16 * scale),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Secondary Actions Row
-                      Row(
-                        children: [
-                          Flexible(
-                            child: _buildSecondaryActionButton(
-                              icon: Icons.save,
-                              label: 'Save Only',
-                              onTap: _savePDFOnly,
-                              color: Colors.green,
-                              scale: scale,
-                            ),
-                          ),
-                          SizedBox(width: 12 * scale),
-                          Flexible(
-                            child: _buildSecondaryActionButton(
-                              icon: Icons.share,
-                              label: 'Share Only',
-                              onTap: _sharePDFOnly,
-                              color: Colors.blue,
-                              scale: scale,
-                            ),
-                          ),
-                          SizedBox(width: 12 * scale),
-                          Flexible(
-                            child: _buildSecondaryActionButton(
-                              icon: Icons.edit,
-                              label: 'Edit',
-                              onTap: () {
-                                setState(() {
-                                  _showSuccessPreview = false;
-                                  _generatedPDF = null;
-                                });
-                              },
-                              color: Colors.orange,
-                              scale: scale,
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
                 ),
-              ),
 
-              // Loading overlay
-              if (_showLoadingOverlay)
+                // Enhanced PDF Info Card with Image Thumbnails & Modern Design
                 Container(
-                  color: Colors.black.withOpacity(0.6),
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(32),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                        spreadRadius: -5,
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).primaryColor,
-                            ),
-                            strokeWidth: 3,
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      // PDF Header with Title
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              const Color(0xFFF8FAFC),
+                              Colors.grey.shade50,
+                            ],
                           ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'Processing...',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF1E293B),
-                            ),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            topRight: Radius.circular(24),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Please wait while we process your request',
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 14,
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Theme.of(context).primaryColor,
+                                    Theme.of(context)
+                                        .primaryColor
+                                        .withValues(alpha: 0.8),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(context)
+                                        .primaryColor
+                                        .withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.picture_as_pdf_rounded,
+                                color: Colors.white,
+                                size: 28,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _pdfTitle,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 18,
+                                      color: Color(0xFF1E293B),
+                                      letterSpacing: -0.5,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 5,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .primaryColor
+                                          .withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Theme.of(context)
+                                            .primaryColor
+                                            .withValues(alpha: 0.2),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'PDF Document',
+                                      style: TextStyle(
+                                        color: Theme.of(context).primaryColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+
+                      // Thumbnail Preview Section
+                      if (_selectedImages.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.blue.shade50,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      Icons.photo_library_rounded,
+                                      size: 18,
+                                      color: Colors.blue.shade700,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Page Preview',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.grey.shade800,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [
+                                          Theme.of(context)
+                                              .primaryColor
+                                              .withValues(alpha: 0.1),
+                                          Theme.of(context)
+                                              .primaryColor
+                                              .withValues(alpha: 0.05),
+                                        ],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: TextButton.icon(
+                                      onPressed: _viewPDF,
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      icon: Icon(
+                                        Icons.fullscreen_rounded,
+                                        size: 16,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      label: Text(
+                                        'View Full',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                height: 110,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: _selectedImages.length > 5
+                                      ? 5
+                                      : _selectedImages.length,
+                                  itemBuilder: (context, index) {
+                                    return Container(
+                                      margin: const EdgeInsets.only(right: 12),
+                                      child: Stack(
+                                        children: [
+                                          Container(
+                                            width: 80,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              border: Border.all(
+                                                color: Theme.of(context)
+                                                    .primaryColor
+                                                    .withValues(alpha: 0.3),
+                                                width: 2.5,
+                                              ),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black
+                                                      .withValues(alpha: 0.15),
+                                                  blurRadius: 10,
+                                                  offset: const Offset(0, 4),
+                                                ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              child: Image.file(
+                                                _selectedImages[index],
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                          Positioned(
+                                            bottom: 6,
+                                            left: 6,
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [
+                                                    Colors.black
+                                                        .withValues(alpha: 0.8),
+                                                    Colors.black
+                                                        .withValues(alpha: 0.6),
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Text(
+                                                '${index + 1}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                              if (_selectedImages.length > 5)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.info_outline_rounded,
+                                        size: 14,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        '+${_selectedImages.length - 5} more page${_selectedImages.length - 5 == 1 ? '' : 's'}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+
+                      // Divider
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Colors.grey.shade200,
+                      ),
+
+                      // File Details with Icons
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            _buildDetailRow(
+                              Icons.description_rounded,
+                              'Total Pages',
+                              '${_selectedImages.length} page${_selectedImages.length == 1 ? '' : 's'}',
+                            ),
+                            const SizedBox(height: 14),
+                            _buildDetailRow(
+                              Icons.crop_square_rounded,
+                              'Page Size',
+                              _selectedPageSize.name.toUpperCase(),
+                            ),
+                            const SizedBox(height: 14),
+                            FutureBuilder<String>(
+                              future: _getPDFFileSize(),
+                              builder: (context, snapshot) {
+                                return _buildDetailRow(
+                                  Icons.storage_rounded,
+                                  'File Size',
+                                  snapshot.data ?? 'Calculating...',
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 24.h),
+
+                // Compact Action Buttons
+                SafeArea(
+                  child: Container(
+                    margin: EdgeInsets.all(16 * scale),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Secondary Actions Row
+                        Row(
+                          children: [
+                            Flexible(
+                              child: _buildSecondaryActionButton(
+                                icon: Icons.save,
+                                label: 'Save Only',
+                                onTap: _savePDFOnly,
+                                color: Colors.green,
+                                scale: scale,
+                              ),
+                            ),
+                            SizedBox(width: 12 * scale),
+                            Flexible(
+                              child: _buildSecondaryActionButton(
+                                icon: Icons.share,
+                                label: 'Share Only',
+                                onTap: _sharePDFOnly,
+                                color: Colors.blue,
+                                scale: scale,
+                              ),
+                            ),
+                            SizedBox(width: 12 * scale),
+                            Flexible(
+                              child: _buildSecondaryActionButton(
+                                icon: Icons.edit,
+                                label: 'Edit',
+                                onTap: () {
+                                  setState(() {
+                                    _showSuccessPreview = false;
+                                    _generatedPDF = null;
+                                  });
+                                },
+                                color: Colors.orange,
+                                scale: scale,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-            ],
+
+                // Loading overlay
+                if (_showLoadingOverlay)
+                  Container(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    child: Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(32),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).primaryColor,
+                              ),
+                              strokeWidth: 3,
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Processing...',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF1E293B),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Please wait while we process your request',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
-          ),
+      ),
     );
   }
 
@@ -1988,7 +1956,7 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -2163,15 +2131,17 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                   ),
                   const SizedBox(height: 16),
                   ListTile(
-                    leading: Icon(Icons.save_alt, color: Theme.of(context).primaryColor),
+                    leading: Icon(Icons.save_alt,
+                        color: Theme.of(context).primaryColor),
                     title: const Text('Save & Share'),
                     onTap: () async {
                       Navigator.pop(context);
                       if (_generatedPDF == null) return;
                       setState(() => _showLoadingOverlay = true);
                       try {
-                        final documentProvider =
-                            Provider.of<DocumentProvider>(context, listen: false);
+                        final documentProvider = Provider.of<DocumentProvider>(
+                            context,
+                            listen: false);
                         await documentProvider.createDocument(
                           name: _pdfTitle.trim(),
                           imagePath: _generatedPDF!.path,
@@ -2193,7 +2163,8 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
                   ),
                   const SizedBox(height: 8),
                   ListTile(
-                    leading: Icon(Icons.file_download, color: Theme.of(context).primaryColor),
+                    leading: Icon(Icons.file_download,
+                        color: Theme.of(context).primaryColor),
                     title: const Text('View PDF Details'),
                     onTap: () {
                       Navigator.pop(context);
@@ -2243,4 +2214,3 @@ class _ImageToPdfScreenState extends State<ImageToPdfScreen>
     );
   }
 }
-

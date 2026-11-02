@@ -16,7 +16,7 @@ enum ScanMode {
 }
 
 class DocumentScannerScreen extends StatefulWidget {
-  const DocumentScannerScreen({Key? key}) : super(key: key);
+  const DocumentScannerScreen({super.key});
 
   @override
   State<DocumentScannerScreen> createState() => _DocumentScannerScreenState();
@@ -360,7 +360,7 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
           // Back Button
           Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -372,7 +372,7 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
           // Flash Toggle
           Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -390,8 +390,8 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
               decoration: BoxDecoration(
                 color: _documentQuality > 0.7
-                    ? Colors.green.withOpacity(0.8)
-                    : Colors.orange.withOpacity(0.8),
+                    ? Colors.green.withValues(alpha: 0.8)
+                    : Colors.orange.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(20.r),
               ),
               child: Row(
@@ -419,8 +419,8 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
           Container(
             decoration: BoxDecoration(
               color: _isDetectionEnabled
-                  ? AppColors.primaryBlue.withOpacity(0.8)
-                  : Colors.black.withOpacity(0.5),
+                  ? AppColors.primaryBlue.withValues(alpha: 0.8)
+                  : Colors.black.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: IconButton(
@@ -446,7 +446,7 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
       margin: EdgeInsets.symmetric(horizontal: 16.w),
       padding: EdgeInsets.all(4.w),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.6),
+        color: Colors.black.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: Row(
@@ -488,8 +488,9 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
         decoration: BoxDecoration(
-          color:
-              isSelected ? Colors.white.withOpacity(0.2) : Colors.transparent,
+          color: isSelected
+              ? Colors.white.withValues(alpha: 0.2)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8.r),
         ),
         child: Column(
@@ -527,7 +528,7 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
               width: 56.w,
               height: 56.h,
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
                 border: Border.all(color: Colors.white, width: 2),
               ),
@@ -551,7 +552,7 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.3),
+                      color: Colors.white.withValues(alpha: 0.3),
                       blurRadius: 20,
                       spreadRadius: 5,
                     ),
@@ -589,7 +590,7 @@ class _DocumentScannerScreenState extends State<DocumentScannerScreen>
               decoration: BoxDecoration(
                 color: _autoCapture
                     ? AppColors.primaryBlue
-                    : Colors.white.withOpacity(0.2),
+                    : Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: _autoCapture ? AppColors.primaryBlue : Colors.white,
@@ -627,7 +628,7 @@ class DocumentOverlayPainter extends CustomPainter {
 
     // Draw semi-transparent fill
     final fillPaint = Paint()
-      ..color = overlayColor.withOpacity(0.2)
+      ..color = overlayColor.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
 
     final fillPath = Path()

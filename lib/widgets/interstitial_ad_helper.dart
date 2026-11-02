@@ -10,7 +10,7 @@ class InterstitialAdHelper {
   // Preload ad to avoid lag when showing
   static void preloadAd({String? adUnitId}) {
     if (!AdConfig.enableAds || _isAdLoaded || _isLoading) return;
-    
+
     _isLoading = true;
     InterstitialAd.load(
       adUnitId: adUnitId ?? AdConfig.interstitialAdUnitId,
@@ -39,7 +39,7 @@ class InterstitialAdHelper {
       if (onAdClosed != null) onAdClosed();
       return;
     }
-    
+
     // If ad is already loaded, show it immediately
     if (_isAdLoaded && _interstitialAd != null) {
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -64,7 +64,7 @@ class InterstitialAdHelper {
       _interstitialAd!.show();
       return;
     }
-    
+
     // Ad not preloaded, load and show (fallback)
     InterstitialAd.load(
       adUnitId: adUnitId ?? AdConfig.interstitialAdUnitId,
@@ -101,7 +101,7 @@ class InterstitialAdHelper {
       ),
     );
   }
-  
+
   // Clean up when no longer needed
   static void dispose() {
     _interstitialAd?.dispose();

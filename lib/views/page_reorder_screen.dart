@@ -10,7 +10,7 @@ import '../widgets/native_ad_widget.dart';
 class PageReorderScreen extends StatefulWidget {
   final File? initialPdfFile;
 
-  const PageReorderScreen({Key? key, this.initialPdfFile}) : super(key: key);
+  const PageReorderScreen({super.key, this.initialPdfFile});
 
   @override
   State<PageReorderScreen> createState() => _PageReorderScreenState();
@@ -91,7 +91,7 @@ class _PageReorderScreenState extends State<PageReorderScreen> {
             Container(
               padding: EdgeInsets.all(32.w),
               decoration: BoxDecoration(
-                color: Colors.amber.withOpacity(0.1),
+                color: Colors.amber.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16.r),
               ),
               child: Icon(
@@ -312,7 +312,7 @@ class _PageReorderScreenState extends State<PageReorderScreen> {
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),

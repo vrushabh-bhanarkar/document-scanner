@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../core/themes.dart';
-import 'dart:io';
 
 /// Modern Action Button with gradient and icon
 class ModernActionButton extends StatelessWidget {
@@ -18,7 +17,7 @@ class ModernActionButton extends StatelessWidget {
   final BorderRadius? borderRadius;
 
   const ModernActionButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.icon,
     this.onPressed,
@@ -29,7 +28,7 @@ class ModernActionButton extends StatelessWidget {
     this.fontSize,
     this.height,
     this.borderRadius,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +42,8 @@ class ModernActionButton extends StatelessWidget {
         borderRadius: borderRadius ?? BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: (backgroundColor ?? AppColors.primaryBlue).withOpacity(0.3),
+            color: (backgroundColor ?? AppColors.primaryBlue)
+                .withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -102,7 +102,7 @@ class ModernCard extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
 
   const ModernCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
     this.borderColor,
@@ -110,7 +110,7 @@ class ModernCard extends StatelessWidget {
     this.borderWidth,
     this.borderRadius,
     this.boxShadow,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -126,12 +126,12 @@ class ModernCard extends StatelessWidget {
         boxShadow: boxShadow ??
             [
               BoxShadow(
-                color: AppColors.primaryBlue.withOpacity(0.08),
+                color: AppColors.primaryBlue.withValues(alpha: 0.08),
                 blurRadius: 30,
                 offset: const Offset(0, 12),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 20,
                 offset: const Offset(0, 6),
               ),
@@ -151,13 +151,13 @@ class ModernSectionHeader extends StatelessWidget {
   final Widget? trailing;
 
   const ModernSectionHeader({
-    Key? key,
+    super.key,
     required this.title,
     this.subtitle,
     this.icon,
     this.iconColor,
     this.trailing,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -169,13 +169,14 @@ class ModernSectionHeader extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  (iconColor ?? AppColors.primaryBlue).withOpacity(0.15),
-                  (iconColor ?? AppColors.primaryBlue).withOpacity(0.05),
+                  (iconColor ?? AppColors.primaryBlue).withValues(alpha: 0.15),
+                  (iconColor ?? AppColors.primaryBlue).withValues(alpha: 0.05),
                 ],
               ),
               borderRadius: BorderRadius.circular(14.r),
               border: Border.all(
-                color: (iconColor ?? AppColors.primaryBlue).withOpacity(0.2),
+                color:
+                    (iconColor ?? AppColors.primaryBlue).withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -224,15 +225,15 @@ class ModernLoadingOverlay extends StatelessWidget {
   final String? subtitle;
 
   const ModernLoadingOverlay({
-    Key? key,
+    super.key,
     this.message = 'Processing...',
     this.subtitle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black.withOpacity(0.7),
+      color: Colors.black.withValues(alpha: 0.7),
       child: Center(
         child: Container(
           padding: EdgeInsets.all(36.w),
@@ -242,7 +243,7 @@ class ModernLoadingOverlay extends StatelessWidget {
             borderRadius: BorderRadius.circular(28.r),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primaryBlue.withOpacity(0.3),
+                color: AppColors.primaryBlue.withValues(alpha: 0.3),
                 blurRadius: 40,
                 offset: const Offset(0, 20),
               ),
@@ -258,7 +259,7 @@ class ModernLoadingOverlay extends StatelessWidget {
                   borderRadius: BorderRadius.circular(60.r),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primaryBlue.withOpacity(0.4),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.4),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -308,13 +309,13 @@ class ModernImageThumbnail extends StatelessWidget {
   final int? index;
 
   const ModernImageThumbnail({
-    Key? key,
+    super.key,
     required this.imagePath,
     this.onRemove,
     this.onTap,
     this.showReorderHandle = false,
     this.index,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -325,7 +326,7 @@ class ModernImageThumbnail extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryBlue.withOpacity(0.1),
+              color: AppColors.primaryBlue.withValues(alpha: 0.1),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -363,8 +364,8 @@ class ModernImageThumbnail extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withOpacity(0.0),
-                      Colors.black.withOpacity(0.6),
+                      Colors.black.withValues(alpha: 0.0),
+                      Colors.black.withValues(alpha: 0.6),
                     ],
                     stops: const [0.6, 1.0],
                   ),
@@ -384,7 +385,7 @@ class ModernImageThumbnail extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.r),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.error.withOpacity(0.4),
+                          color: AppColors.error.withValues(alpha: 0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -405,7 +406,7 @@ class ModernImageThumbnail extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(6.w),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.9),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.9),
                     borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Icon(
@@ -431,13 +432,13 @@ class ModernEmptyState extends StatelessWidget {
   final VoidCallback? onAction;
 
   const ModernEmptyState({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
     this.actionLabel,
     this.onAction,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
