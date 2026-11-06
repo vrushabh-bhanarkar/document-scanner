@@ -34,8 +34,16 @@ class AppConfig {
   static const bool enableDarkMode = false; // Always white background
   static const bool enableAnimations = true;
 
-  // API Keys (for future use)
+  // API Keys & Cloud Services
   static const String googleAdMobAppId = '';
+  static const String supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: 'https://placeholder.supabase.co',
+  );
+  static const String supabaseAnonKey = String.fromEnvironment(
+    'SUPABASE_ANON_KEY',
+    defaultValue: 'public-anon-key-placeholder',
+  );
 
   // Permissions
   static const List<String> requiredPermissions = [

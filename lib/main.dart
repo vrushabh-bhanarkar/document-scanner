@@ -28,6 +28,7 @@ import 'views/auth/login_screen.dart';
 import 'views/paywall.dart';
 import 'views/profile_screen.dart';
 import 'services/revenuecat_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 List<CameraDescription> cameras = [];
 bool _isCameraResetNeeded = false;
@@ -123,6 +124,17 @@ Future<void> main() async {
     print('RevenueCat initialized successfully');
   } catch (e) {
     print('Error initializing RevenueCat: $e');
+  }
+
+  // Initialize Supabase for Pro Cloud Sync (Offline safe)
+  try {
+    await Supabase.initialize(
+      url: AppConfig.supabaseUrl,
+      anonKey: AppConfig.supabaseAnonKey,
+    );
+    print('Supabase initialized successfully');
+  } catch (e) {
+    print('Supabase initialization skipped or failed: $e');
   }
 
   final subscriptionProvider = SubscriptionProvider();

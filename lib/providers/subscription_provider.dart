@@ -41,14 +41,16 @@ class SubscriptionProvider extends ChangeNotifier {
   Package? get yearlyPackage {
     final current = _offerings?.current;
     if (current == null) return null;
-    return current.annual ??
+    return _findPackage(current, RevenueCatService.productProAnnual, PackageType.annual) ??
+        current.annual ??
         _findPackage(current, RevenueCatService.productYearly, PackageType.annual);
   }
 
   Package? get monthlyPackage {
     final current = _offerings?.current;
     if (current == null) return null;
-    return current.monthly ??
+    return _findPackage(current, RevenueCatService.productProMonthly, PackageType.monthly) ??
+        current.monthly ??
         _findPackage(current, RevenueCatService.productMonthly, PackageType.monthly);
   }
 
