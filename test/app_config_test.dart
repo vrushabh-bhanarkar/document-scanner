@@ -3,8 +3,9 @@ import 'package:docscanner/core/app_config.dart';
 
 void main() {
   group('AppConfig Unit Tests', () {
-    test('backendApiUrl defaults to live Fly.io endpoint', () {
+    test('backendApiUrl and supabaseUrl default to project endpoints', () {
       expect(AppConfig.backendApiUrl, 'https://sleekscan-backend.fly.dev');
+      expect(AppConfig.supabaseUrl, 'https://qsoijsmwxbccvzxcziks.supabase.co');
     });
 
     test('AppName and Version are defined properly', () {
