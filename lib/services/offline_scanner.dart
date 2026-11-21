@@ -190,7 +190,11 @@ class OfflineScannerService {
   }
 
   /// Release resources
-  void dispose() {
-    _textRecognizer.close();
+  Future<void> dispose() async {
+    try {
+      await _textRecognizer.close();
+    } catch (_) {
+      // Ignored if platform channel is not active
+    }
   }
 }

@@ -36,6 +36,10 @@ class AppConfig {
 
   // API Keys & Cloud Services
   static const String googleAdMobAppId = '';
+  static const String backendApiUrl = String.fromEnvironment(
+    'BACKEND_API_URL',
+    defaultValue: 'https://sleekscan-backend.fly.dev',
+  );
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
     defaultValue: 'https://placeholder.supabase.co',

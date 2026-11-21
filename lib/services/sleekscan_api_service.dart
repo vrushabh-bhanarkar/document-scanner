@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import '../core/app_config.dart';
 
 class SleekScanApiService {
-  // Use 10.0.2.2 for Android Emulator, localhost for iOS simulator/macOS, or machine IP for physical devices
-  static const String baseUrl = "http://10.0.2.2:8000/api/v1";
+  // Uses live deployed Fly.io backend by default, configurable via BACKEND_API_URL
+  static String get baseUrl => "${AppConfig.backendApiUrl}/api/v1";
 
   /// Pro AI Feature: Ask questions or summarize PDF
   static Future<String> chatWithPdf({

@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../services/revenuecat_service.dart';
+import '../theme/app_theme.dart';
 
-/// Modern SleekScan Pro Paywall Screen
-/// Presenting:
-/// - Monthly: sleekscan_pro_monthly
-/// - Annual: sleekscan_pro_annual
-/// Gating: Watermark removal, Cloud Sync, and Web Dashboard export.
+/// Production SleekScan Pro Paywall Screen
+/// - Visual Comparison: Free (Offline Core) vs Pro (Cloud Sync, No Watermarks, Password Lock, Unlimited Batch Scans)
+/// - Plan selection toggling between Monthly and Annual with discount tags
+/// - Integrated purchasing via `purchases_flutter` with error handling, loading states, and "Restore Purchases"
 class PaywallScreen extends StatefulWidget {
   final bool autoPresentRevenueCatPaywall;
 
@@ -82,9 +82,9 @@ class _PaywallScreenState extends State<PaywallScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Package is currently unavailable from Google Play. Please try again later.',
+            'Package is currently unavailable from Store. Please try again later.',
           ),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppTheme.warningAmber,
         ),
       );
       return;
@@ -104,7 +104,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('🎉 Welcome to SleekScan Pro! All features unlocked.'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.emerald,
           ),
         );
         Navigator.of(context).pop(true);
@@ -112,7 +112,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Purchase completed, but Pro entitlement is still syncing.'),
+            content: Text('Purchase completed, syncing Pro entitlement...'),
           ),
         );
       }
@@ -123,7 +123,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Purchase error: ${e.message ?? e.toString()}'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppTheme.errorRed,
           ),
         );
       }
@@ -132,7 +132,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error: $e'),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: AppTheme.errorRed,
         ),
       );
     } finally {
@@ -154,7 +154,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('✅ Purchases successfully restored! Pro plan is active.'),
-            backgroundColor: Colors.green,
+            backgroundColor: AppTheme.emerald,
           ),
         );
         Navigator.of(context).pop(true);
@@ -170,7 +170,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to restore purchases: $e'),
-          backgroundColor: Colors.redAccent,
+          backgroundColor: AppTheme.errorRed,
         ),
       );
     } finally {
@@ -183,7 +183,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A), // Dark slate premium theme
+      backgroundColor: AppTheme.darkSlate,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -207,7 +207,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: Colors.blueAccent),
+              child: CircularProgressIndicator(color: AppTheme.indigoLight),
             )
           : SafeArea(
               child: SingleChildScrollView(
@@ -222,7 +222,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                             horizontal: 14, vertical: 6),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFF3B82F6), Color(0xFF8B5CF6)],
+                            colors: [AppTheme.indigo, AppTheme.emerald],
                           ),
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -251,44 +251,24 @@ class _PaywallScreenState extends State<PaywallScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Text(
+                    const Text(
                       'Professional scanning, cloud sync, and zero watermarks.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color: Colors.grey.shade400,
+                        color: AppTheme.textSecondary,
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 24),
 
-                    // Feature Matrix
-                    _buildFeatureItem(
-                      icon: Icons.branding_watermark_outlined,
-                      title: 'No Watermark on Exports',
-                      subtitle: 'Clean, professional multi-page PDF documents',
-                    ),
-                    _buildFeatureItem(
-                      icon: Icons.cloud_sync_outlined,
-                      title: 'Cloud Backup & Sync (Supabase)',
-                      subtitle: 'Auto-sync scans safely to secure cloud storage',
-                    ),
-                    _buildFeatureItem(
-                      icon: Icons.language_outlined,
-                      title: 'Web Portal & OCR Search',
-                      subtitle: 'Search & copy scanned OCR text from any browser',
-                    ),
-                    _buildFeatureItem(
-                      icon: Icons.draw_outlined,
-                      title: 'Digital E-Signatures & Stamps',
-                      subtitle: 'Draw, save, and stamp signatures with no limits',
-                    ),
+                    // Visual Comparison Table: Free vs Pro
+                    _buildVisualComparisonTable(),
                     const SizedBox(height: 24),
 
                     // Pricing Selector Cards
                     _buildPricingCard(
                       plan: PlanType.annual,
                       title: 'Annual Pro',
-                      packageId: 'sleekscan_pro_annual',
                       priceString: _annualPackage?.storeProduct.priceString ??
                           '\$29.99 / year',
                       subtext: '\$2.49 / month · Billed annually',
@@ -298,7 +278,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     _buildPricingCard(
                       plan: PlanType.monthly,
                       title: 'Monthly Pro',
-                      packageId: 'sleekscan_pro_monthly',
                       priceString: _monthlyPackage?.storeProduct.priceString ??
                           '\$4.99 / month',
                       subtext: 'Billed monthly · Cancel anytime',
@@ -309,7 +288,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     // CTA Button
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3B82F6),
+                        backgroundColor: AppTheme.indigo,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         elevation: 4,
@@ -339,13 +318,13 @@ class _PaywallScreenState extends State<PaywallScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Footer guarantee & links
-                    Text(
-                      'Secured with Google Play In-App Billing. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period.',
+                    // Footer guarantee & terms
+                    const Text(
+                      'Secured with Google Play & App Store Billing. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.grey.shade500,
+                        color: AppTheme.textMuted,
                         height: 1.4,
                       ),
                     ),
@@ -357,46 +336,158 @@ class _PaywallScreenState extends State<PaywallScreen> {
     );
   }
 
-  Widget _buildFeatureItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  /// Visual comparison: Free (Offline Core) vs Pro (Cloud Sync, No Watermarks, Password Lock, Unlimited Batch Scans)
+  Widget _buildVisualComparisonTable() {
+    return Container(
+      decoration: AppTheme.cardDecoration(
+        surfaceColor: AppTheme.cardSurface,
+        borderColor: AppTheme.borderDark,
+      ),
+      child: Column(
         children: [
+          // Table Header
           Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: const BoxDecoration(
+              color: AppTheme.surfaceElevated,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(14),
+                topRight: Radius.circular(14),
+              ),
             ),
-            child: Icon(icon, color: const Color(0xFF60A5FA), size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: const Row(
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                Expanded(
+                  flex: 5,
+                  child: Text(
+                    'Feature',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    color: Colors.grey.shade400,
-                    fontSize: 12,
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Free Plan',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Text(
+                    'Pro Plan',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: AppTheme.emeraldLight,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                    ),
                   ),
                 ),
               ],
+            ),
+          ),
+          const Divider(height: 1, color: AppTheme.borderDark),
+
+          // Comparison Rows
+          _buildComparisonRow(
+            feature: 'Cloud Sync (Supabase)',
+            freeVal: '❌ None',
+            proVal: '✅ Auto Sync',
+            isProHighlight: true,
+          ),
+          _buildComparisonRow(
+            feature: 'PDF Watermark',
+            freeVal: 'Watermarked',
+            proVal: '✅ 100% Clean',
+            isProHighlight: true,
+          ),
+          _buildComparisonRow(
+            feature: 'AES-128 Password Lock',
+            freeVal: '❌ Locked',
+            proVal: '✅ Unlimited',
+            isProHighlight: true,
+          ),
+          _buildComparisonRow(
+            feature: 'Batch Scanning',
+            freeVal: '5 Scans/day',
+            proVal: '✅ Unlimited',
+            isProHighlight: true,
+          ),
+          _buildComparisonRow(
+            feature: 'Offline Core Scanner',
+            freeVal: '✅ Included',
+            proVal: '✅ Included',
+            isProHighlight: false,
+          ),
+          _buildComparisonRow(
+            feature: 'On-Device ML Kit OCR',
+            freeVal: '✅ Included',
+            proVal: '✅ Included',
+            isProHighlight: false,
+            isLast: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildComparisonRow({
+    required String feature,
+    required String freeVal,
+    required String proVal,
+    required bool isProHighlight,
+    bool isLast = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+      decoration: BoxDecoration(
+        border: isLast
+            ? null
+            : const Border(bottom: BorderSide(color: AppTheme.borderDark, width: 0.8)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 5,
+            child: Text(
+              feature,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              freeVal,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppTheme.textMuted,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              proVal,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: isProHighlight ? AppTheme.emeraldLight : Colors.white,
+                fontSize: 12,
+                fontWeight: isProHighlight ? FontWeight.bold : FontWeight.normal,
+              ),
             ),
           ),
         ],
@@ -407,7 +498,6 @@ class _PaywallScreenState extends State<PaywallScreen> {
   Widget _buildPricingCard({
     required PlanType plan,
     required String title,
-    required String packageId,
     required String priceString,
     required String subtext,
     required String? tag,
@@ -419,20 +509,16 @@ class _PaywallScreenState extends State<PaywallScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected
-              ? const Color(0xFF1E293B)
-              : const Color(0xFF131D2E),
+          color: isSelected ? AppTheme.cardSurface : AppTheme.darkSlate,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF3B82F6)
-                : Colors.white.withOpacity(0.08),
+            color: isSelected ? AppTheme.indigo : AppTheme.borderDark,
             width: isSelected ? 2 : 1,
           ),
           boxShadow: [
             if (isSelected)
               BoxShadow(
-                color: const Color(0xFF3B82F6).withOpacity(0.2),
+                color: AppTheme.indigo.withOpacity(0.25),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -444,7 +530,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               isSelected
                   ? Icons.radio_button_checked
                   : Icons.radio_button_off,
-              color: isSelected ? const Color(0xFF3B82F6) : Colors.grey.shade600,
+              color: isSelected ? AppTheme.indigoLight : AppTheme.textMuted,
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -467,7 +553,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.green.shade700,
+                            color: AppTheme.emeraldDark,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -485,8 +571,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
                   const SizedBox(height: 4),
                   Text(
                     subtext,
-                    style: TextStyle(
-                      color: Colors.grey.shade400,
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -496,7 +582,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
             Text(
               priceString,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF60A5FA) : Colors.white,
+                color: isSelected ? AppTheme.indigoLight : Colors.white,
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
               ),

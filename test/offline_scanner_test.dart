@@ -6,10 +6,10 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Offline Services Initialization Tests', () {
-    test('OfflineScannerService instantiates correctly', () {
+    test('OfflineScannerService instantiates correctly', () async {
       final service = OfflineScannerService();
       expect(service, isNotNull);
-      service.dispose();
+      await service.dispose();
     });
 
     test('AdvancedScannerService instantiates correctly', () async {
