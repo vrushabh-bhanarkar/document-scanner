@@ -9,13 +9,16 @@ class RevenueCatService {
   RevenueCatService._internal();
   static final RevenueCatService instance = RevenueCatService._internal();
 
-  /// RevenueCat API key provided for Void Version app
+  /// RevenueCat API key provided for SleekScan app
   static const String apiKey = 'test_JWwLfRsLfTqxhyUzsNwAjqLrLAf';
 
   /// Primary entitlement identifier for Pro features
-  static const String entitlementId = 'void_version_pro';
+  static const String entitlementId = 'pro_features';
+  static const String legacyEntitlementId = 'void_version_pro';
 
   /// Product Identifiers configured in RevenueCat & App Stores
+  static const String productProMonthly = 'sleekscan_pro_monthly';
+  static const String productProAnnual = 'sleekscan_pro_annual';
   static const String productLifetime = 'lifetime';
   static const String productYearly = 'yearly';
   static const String productMonthly = 'monthly';
@@ -63,11 +66,13 @@ class RevenueCatService {
     }
   }
 
-  /// Check whether the customer has active 'void_version_pro' entitlement
+  /// Check whether the customer has active 'pro_features' entitlement
   bool isProActive(CustomerInfo? customerInfo) {
     if (customerInfo == null) return false;
     final entitlement = customerInfo.entitlements.all[entitlementId];
-    return entitlement != null && entitlement.isActive;
+    if (entitlement != null && entitlement.isActive) return true;
+    final legacyEntitlement = customerInfo.entitlements.all[legacyEntitlementId];
+    return legacyEntitlement != null && legacyEntitlement.isActive;
   }
 
   /// Fetch offerings configured in RevenueCat dashboard
